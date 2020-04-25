@@ -1,0 +1,28 @@
+﻿@model Cycler.Controllers.Models.AuthenticateModel
+@{
+    ViewData["Title"] = "Home Page";
+}
+@if (ViewBag.HasMessage == true)
+{
+    <div style="min-height:66px;max-height:66px">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <strong>Oh snap!</strong> @ViewBag.Message
+            </div>
+    </div>
+}
+else
+{
+    <div style="min-height:66px;max-height:66px"></div>
+}
+<head>
+    <link rel="stylesheet" href="~/css/user/login.css"/>
+</head>
+<div class="row" style="padding-top:10%">
+<div class="column">
+    <partial name="LoginPartial"/>
+</div>
+<div class="column">
+<partial name="RegisterPartial"/>
+</div>
+</div>
