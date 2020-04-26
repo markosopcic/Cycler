@@ -12,6 +12,8 @@ namespace Cycler.Data
         public IMongoCollection<User> User => database.GetCollection<User>("User");
 
         public IMongoCollection<Event> Event => database.GetCollection<Event>("Event");
+        
+        public IMongoCollection<Invitation> Invitation => database.GetCollection<Invitation>("Invitation");
 
         public MongoContext(string connectionString,string databaseName)
         {

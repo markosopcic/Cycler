@@ -1,0 +1,21 @@
+﻿@model IEnumerable<Cycler.Views.Models.EventViewModel>
+
+<a asp-action="Create">Create new event</a>
+
+@foreach (var ev in Model)
+{
+    <div>
+        @ev.Name
+    </div>
+    <div>
+        @ev.Description
+    </div>
+    <div>
+        @ev.StartTime
+    </div>
+    <div>
+        @ev.EndTime
+    </div>
+    <hr/>
+}
+

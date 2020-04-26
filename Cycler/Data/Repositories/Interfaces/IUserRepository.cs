@@ -9,8 +9,7 @@ namespace Cycler.Data.Repositories.Interfaces
         User Login(string email, string password);
 
         User Register(RegisterModel user);
-
-        IEnumerable<User> GetAll();
+        
 
         bool Delete(string id);
 

@@ -14,9 +14,12 @@ namespace Cycler.Data.Models
         
         public bool Private { get; set; }
         
-        public IEnumerable<ObjectId> AcceptedUsers { get; set; }
+        public string Name { get; set; }
         
-        public IEnumerable<ObjectId> InvitedUsers { get; set; }
+        public string Description { get; set; }
+        
+        public IEnumerable<Invitation> Invitations { get; set; }
+
         [BsonDateTimeOptions]
         public DateTime StartTime { get; set; }
         [BsonDateTimeOptions]

@@ -10,18 +10,11 @@ using Cycler.Data;
 using Cycler.Data.Repositories;
 using Cycler.Data.Repositories.Interfaces;
 using Cycler.Helpers;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
-using Cycler.Extensions;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Identity;
 
 namespace Cycler
 {
@@ -43,6 +36,7 @@ namespace Cycler
                        services.AddSingleton<MongoContext>(
                 new MongoContext(Configuration.GetConnectionString("MongoConnectionString"),Configuration.GetValue<string>("DatabaseName")));
             services.AddTransient<IUserRepository, UserRepository>();
+            services.AddTransient<IEventRepository, EventRepository>();
             
             var appSettingsSection = Configuration.GetSection("AppSettings");
             services.Configure<AppSettings>(appSettingsSection);
