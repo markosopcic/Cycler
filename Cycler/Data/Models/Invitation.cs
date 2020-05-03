@@ -8,6 +8,8 @@ namespace Cycler.Data.Models
     {
         [BsonId]
         public ObjectId InvitationId { get; set; }
+        
+        public ObjectId EventId { get; set; }
         public ObjectId InviterId { get; set; }
         public ObjectId InvitedId { get; set; }
         public bool CanInvite { get; set; }

@@ -1,0 +1,22 @@
+﻿@model Cycler.Views.Models.EventViewModel
+
+@{
+    ViewData["Title"] = @Model.Name;
+}
+
+<h3> @Model.Name</h3>
+
+<label class="text-body">Started: @Model.StartTime</label><p></p>
+@if (@Model.Finished)
+{
+    <label class="text-body"Ended: @Model.EndTime ></label><p></p>
+}
+
+@if (!Model.Private)
+{
+    <label class="text-body">People invited: @Model.Invited</label>
+    <p></p>
+    <label class="text-body">People accepted: @Model.Accepted</label>
+    <p></p>
+}
+<div class="text-body"><h3>Description</h3><p></p>@Model.Description</div><br/><p></p>

@@ -1,6 +1,11 @@
 ﻿@model IEnumerable<Cycler.Views.Models.EventViewModel>
 
-<a asp-action="Create">Create new event</a>
+
+@{
+    ViewData["Title"] = "Upcoming events";
+}
+<a asp-action="Create" class="btn btn-block btn-primary">Create new event</a>
+<hr/>
 
 @foreach (var ev in Model)
 {
@@ -8,13 +13,22 @@
         @ev.Name
     </div>
     <div>
-        @ev.Description
+        Description: @ev.Description
     </div>
     <div>
-        @ev.StartTime
+        Start Time: @ev.StartTime.ToLocalTime()
+    </div>
+    @if (ev.Finished)
+    {
+        <div>
+            Finished Time: @ev.EndTime
+        </div>
+    }
+    <div>
+        Invited: @ev.Invited
     </div>
     <div>
-        @ev.EndTime
+        Accepted: @ev.Accepted
     </div>
     <hr/>
 }

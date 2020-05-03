@@ -1,0 +1,55 @@
+﻿@model IEnumerable<Cycler.Views.Models.InvitationViewModel>
+
+<head>
+    <link rel="stylesheet" href="~/css/user/invitations.css"/>
+</head>
+
+@{
+    ViewData["Title"] = "Invitations";
+}
+
+@if (!Model.Any())
+{
+    <h2 class="info" >You don't currently have any invitations!</h2>
+}
+else
+{
+    <h2 class="info" style="display:none">You don't currently have any pending invitations!</h2>
+}
+
+@foreach (var e in Model)
+{
+    <div class="invitation" id="@e.InvitationId" >
+        <div class="column">
+            <label>@e.EventName</label>
+            <p></p>
+            <label>Description:
+                @if (e.EventDescription.Length > 50)
+                {
+                    @(e.EventDescription.Substring(50) + "...")
+                }
+                else
+                {
+                    @e.EventDescription
+                }
+            </label>
+            <p></p>
+            <label>Start Time: @e.EventStartTime.ToLocalTime()</label>
+        </div>
+        <div class="column">
+            <p></p>
+            <label>Invited By: @e.InvitedBy.FirstName @e.InvitedBy.LastName</label>
+            <p></p>
+            <label>Invitation received: @e.InvitationTime</label>
+            <p></p>
+        </div>
+        <div class="column">
+            <button class="btn btn-primary accept">Accept</button><p></p> <button class="btn btn-danger decline">Decline</button>
+        </div>
+    </div>
+    <hr/>
+}
+
+@section Scripts{
+    <script src="~/js/user/invitations.js"></script>
+}

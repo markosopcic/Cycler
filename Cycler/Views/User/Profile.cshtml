@@ -1,0 +1,18 @@
+﻿@model Cycler.Views.Models.UserViewModel
+@if (Model.isFriend)
+{
+    <div>Friend status: Friends</div>
+}else if (Model.FriendshipRequestSent)
+{
+    <div>Friend status: Friendship request already sent</div>
+}
+else
+{
+    <a class="btn btn-block btn-primary" style="float:right;width: 30%" href="/User/SendFriendRequest/@Model.Id">Send Friendship Request</a>
+}
+
+
+<h3>@Model.FirstName @Model.LastName</h3>
+<h4>Email: @Model.Email</h4>
+<h5>Joined: @Model.DateJoined</h5>
+<h5>Friends: @Model.NumOfFriends</h5>

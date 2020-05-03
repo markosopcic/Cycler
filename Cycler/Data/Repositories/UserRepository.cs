@@ -1,6 +1,7 @@
 ﻿﻿using System;
 using System.Collections.Generic;
-using System.Net.Mime;
+ using System.Linq;
+ using System.Net.Mime;
 using System.Text;
 using Cycler.Controllers.Models;
 using Cycler.Data.Models;
@@ -39,13 +40,19 @@ namespace Cycler.Data.Repositories
         public User Register(RegisterModel user)
         {
             if (context.User.Find(e => e.Email == user.Email).CountDocuments() != 0) return null;
+
+            user.FirstName = user.FirstName.Trim();
+            user.LastName = user.LastName.Trim();
             byte[] passwordHash, passwordSalt;
             CreatePasswordHash(user.Password, out passwordHash, out passwordSalt);
-            var u = new User{FirstName = user.FirstName,LastName = user.LastName,Email = user.Email,
+            var u = new User
+            {
+                FirstName = user.FirstName, LastName = user.LastName, Email = user.Email,
+                FullName = user.FirstName.Trim() +" "+ user.LastName.Trim(),
                 PasswordHash = passwordHash,Salt = passwordSalt,
                 DateJoined = DateTime.Now};
             context.User.InsertOne(u);
-                return context.User.Find(e => e.Email == user.Email).First();
+            return u;
 
         }
         
@@ -55,19 +62,39 @@ namespace Cycler.Data.Repositories
             return context.User.Find(e => true).ToList();
         }
 
-        public bool Delete(string id)
+        public bool Delete(ObjectId id)
         {
-            return context.User.DeleteOne(e => e.Id == new ObjectId(id)).DeletedCount > 0;
+            return context.User.DeleteOne(e => e.Id == id).DeletedCount > 0;
         }
 
-        public User GetById(string id)
+        public User GetById(ObjectId id)
         {
-            return context.User.Find(e => e.Id == new ObjectId(id)).FirstOrDefault();
+            return context.User.Find(e => e.Id == id).FirstOrDefault();
         }
+
         
+        
+
+        public IEnumerable<User> SearchUsers(string term)
+        {
+            if (term == null)
+            {
+                throw new ArgumentNullException(nameof(term));
+            }
+
+            term = term.ToLower();
+            
+            return context.User.Find(e => e.FullName.ToLower().Contains(term)).ToEnumerable();
+        }
+
+
+
+
+        
+
         private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
-            if (password == null) throw new ArgumentNullException("password");
+            if (password == null) throw new ArgumentNullException(nameof(password));
             if (string.IsNullOrWhiteSpace(password)) throw new ArgumentException("Value cannot be empty or whitespace only string.", "password");
 
             using (var hmac = new System.Security.Cryptography.HMACSHA512())

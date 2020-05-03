@@ -18,15 +18,15 @@ namespace Cycler.Data.Models
         
         public string Description { get; set; }
         
-        public IEnumerable<Invitation> Invitations { get; set; }
+        public List<ObjectId> AcceptedUsers { get; set; } = new List<ObjectId>();
 
         [BsonDateTimeOptions]
         public DateTime StartTime { get; set; }
         [BsonDateTimeOptions]
-        public DateTime EndTime { get; set; }
+        public DateTime? EndTime { get; set; }
         
         public bool Finished { get; set; }
         
-        public Dictionary<ObjectId,IEnumerable<Location>> Coordinates { get; set; }
+        public Dictionary<ObjectId,IEnumerable<Location>> Coordinates { get; set; } = new Dictionary<ObjectId, IEnumerable<Location>>();
     }
 }

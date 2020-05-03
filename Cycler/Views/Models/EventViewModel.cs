@@ -22,5 +22,7 @@ namespace Cycler.Views.Models
         
         public bool Finished { get; set; }
         
+        public string OwnerId { get; set; }
+        
     }
 }

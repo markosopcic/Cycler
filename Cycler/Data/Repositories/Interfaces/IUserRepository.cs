@@ -1,8 +1,9 @@
 ﻿﻿using System.Collections.Generic;
 using Cycler.Controllers.Models;
 using Cycler.Data.Models;
+ using MongoDB.Bson;
 
-namespace Cycler.Data.Repositories.Interfaces
+ namespace Cycler.Data.Repositories.Interfaces
 {
     public interface IUserRepository
     {
@@ -11,8 +12,16 @@ namespace Cycler.Data.Repositories.Interfaces
         User Register(RegisterModel user);
         
 
-        bool Delete(string id);
+        bool Delete(ObjectId id);
 
-        User GetById(string id);
+        User GetById(ObjectId id);
+
+
+        IEnumerable<User> SearchUsers(string term);
+
+
+
+ 
+        
     }
 }

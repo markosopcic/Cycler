@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Cycler.Data;
+using Cycler.Data.Models;
 using Cycler.Data.Repositories;
 using Cycler.Data.Repositories.Interfaces;
 using Cycler.Helpers;
@@ -15,6 +16,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using FriendshipRepository = Cycler.Data.Repositories.FriendshipRepository;
 
 namespace Cycler
 {
@@ -37,6 +39,8 @@ namespace Cycler
                 new MongoContext(Configuration.GetConnectionString("MongoConnectionString"),Configuration.GetValue<string>("DatabaseName")));
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IEventRepository, EventRepository>();
+            services.AddTransient<IFriendshipRepository, FriendshipRepository>();
+            services.AddTransient<IInvitationRepository, InvitationRepository>();
             
             var appSettingsSection = Configuration.GetSection("AppSettings");
             services.Configure<AppSettings>(appSettingsSection);

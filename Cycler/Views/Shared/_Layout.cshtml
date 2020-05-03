@@ -5,13 +5,18 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    
+    
     <title style="font-family:LuckiestGuy,serif">@ViewData["Title"] - Cycler</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
     
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @RenderSection("Scripts", required: false)
 </head>
@@ -29,9 +34,14 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
+                        @if(User.Identity.IsAuthenticated){
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Invitations">Invitations</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Event" asp-action="Index">Events</a>
+                        </li>
+                        }
                     </ul>
                 </div>
                 @if (User.Identity.IsAuthenticated)
@@ -42,7 +52,8 @@
             </div>
             @if (User.Identity.IsAuthenticated)
             {
-                <form method="GET" style="padding-right: 2%">
+                <select id="nav-search" style="width:15%;padding-right: 5%;height: 50%"></select>
+                <form method="GET" style="padding-right: 2%;padding-left: 2%">
                     <button class="btn btn-danger"  asp-controller="User" asp-action="Logout">Logout</button>
                 </form>
             }
@@ -59,6 +70,7 @@
             &copy; 2020 - Cycler - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+
 
  
 </body>

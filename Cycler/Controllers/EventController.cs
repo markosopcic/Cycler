@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using Cycler.Controllers.Models;
 using Cycler.Data.Models;
 using Cycler.Data.Repositories.Interfaces;
@@ -10,6 +9,7 @@ using Cycler.Views.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
+using static Cycler.Helpers.Utility;
 
 namespace Cycler.Controllers
 {
@@ -17,14 +17,43 @@ namespace Cycler.Controllers
     [Authorize]
     public class EventController : Controller
     {
-        
-        private IEventRepository eventRepository { get; }
 
-        public EventController(IEventRepository eventRepository)
+        private IEventRepository eventRepository;
+        private IInvitationRepository invitationRepository;
+
+        public EventController(IEventRepository eventRepository,IInvitationRepository invitationRepository)
         {
             this.eventRepository = eventRepository ?? throw new ArgumentNullException(nameof(eventRepository));
+            this.invitationRepository =
+                invitationRepository ?? throw new ArgumentNullException(nameof(eventRepository));
         }
 
+        [Route("Event/Details/{eventId}")]
+        public IActionResult Details([FromRoute] string eventId)
+        {
+            if(eventId == null) throw new ArgumentNullException(nameof(eventId));
+            var parsedId = TryParseObjectId(eventId);
+            if (!parsedId.HasValue)
+            {
+                return RedirectToAction("Index");
+            }
+            var e = eventRepository.GetEvent(parsedId.Value);
+
+            return View(new EventViewModel
+            {
+                Name = e.Name,
+                Description = e.Description,
+                Private = e.Private,
+                StartTime = e.StartTime.ToUniversalTime(),
+                EndTime = e.EndTime?.ToUniversalTime(),
+                Accepted = invitationRepository.CountAccepted(parsedId.Value),
+                Invited = invitationRepository.CountInvited(parsedId.Value),
+                OwnerId = e.OwnerId.ToString()
+            });
+
+
+        }
+        
         public IActionResult Create()
         {
             return View("CreateEvent");
@@ -33,32 +62,57 @@ namespace Cycler.Controllers
 
         public IActionResult CreateEvent([FromForm] EventModel model)
         {
-            eventRepository.AddEvent(new Event
+            var e = eventRepository.AddEvent(new Event
             {
-                StartTime = model.StartTime,
+                StartTime = model.StartTime.UtcFromUser(User),
+                EndTime = null,
                 Private = model.IsPrivate,
                 OwnerId = User.Identity.GetUserId(),
                 Name = model.Name,
-                Invitations = new List<Invitation>(),
                 Description =  model.Description
             });
+            foreach (var modelInvitedUserID in model.InvitedUserIDs)
+            {
+                var parsed = TryParseObjectId(modelInvitedUserID);
+                if (parsed.HasValue)
+                {
+                    invitationRepository.InviteUserToEvent(parsed.Value, User.Identity.GetUserId(), e.Id, true);
+                }
+
+            }
+            
             return RedirectToAction("Index");
+        }
+
+        public IActionResult AcceptInvitation([FromQuery] string InvitationId,[FromQuery]bool accept)
+        {
+            var parsedId = TryParseObjectId(InvitationId);
+            if (InvitationId == null || parsedId == null)
+            {
+                return BadRequest("Invitation id cannot be null");
+            }
+
+            if (invitationRepository.AcceptInvitation(parsedId.Value,accept))
+            {
+                return Ok();
+            }
+
+            return BadRequest("Invalid invitation id!");
         }
         
         public IActionResult Index()
         {
             var events = eventRepository.GetEventsForUser(User.Identity.GetUserId());
-            eventRepository.InviteUserToEvent(ObjectId.Parse("5ea481b92904ac28d8328b0f"),User.Identity.GetUserId(),  events.First().Id,
-                true);
-                var result = events.Select(e => new EventViewModel
+            var result = events.Select(e => new EventViewModel
                 {
                     Name = e.Name,
                     Description = e.Description,
                     Private =  e.Private,
-                    StartTime = e.StartTime,
-                    EndTime =  e.EndTime,
-                    Accepted = e.Invitations?.Count(f => f.Accepted) ?? 0,
-                    Invited = e.Invitations?.Count(f => !f.Accepted) ?? 0
+                    StartTime = e.StartTime.ToUserTime(User),
+                    EndTime =  e.EndTime?.ToUserTime(User),
+                    Accepted = invitationRepository.CountAccepted(e.Id),
+                    Invited = invitationRepository.CountInvited(e.Id),
+                    OwnerId = e.OwnerId.ToString()
                 }).OrderByDescending(e => e.StartTime);
             return View(result);
         }

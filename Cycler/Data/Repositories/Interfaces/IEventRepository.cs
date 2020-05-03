@@ -8,11 +8,14 @@ namespace Cycler.Data.Repositories.Interfaces
     {
         public Event AddEvent(Event e);
         
-        bool AcceptInvitation(ObjectId userId, ObjectId eventId);
+
 
         public IEnumerable<Event> GetEventsForUser(ObjectId userId);
 
-        public bool InviteUserToEvent(ObjectId invitedId, ObjectId inviterId, ObjectId eventId, bool canInvite);
+
+
+        public Event GetEvent(ObjectId eventId);
+
     }
     
 

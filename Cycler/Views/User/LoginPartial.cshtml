@@ -11,6 +11,7 @@
         <input asp-for="@Model.Email" class="form-control" style="width:50%;margin: auto" type="text" placeholder="Email"/>
         <label>Password</label>
         <input asp-for="@Model.Password" class="form-control" style="width:50%;margin: auto" type="password" placeholder="Password"/>
+        <input asp-for="@Model.TimeOffset" type="hidden" id="time-offset"/>
         <button id="login-button" type="submit" class="btn btn-primary" style="margin-top : 3%;width: 30%">Login</button>
     </form>
 </div>

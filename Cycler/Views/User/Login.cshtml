@@ -19,10 +19,13 @@ else
     <link rel="stylesheet" href="~/css/user/login.css"/>
 </head>
 <div class="row" style="padding-top:10%">
-<div class="column">
-    <partial name="LoginPartial"/>
+    <div class="column">
+        <partial name="LoginPartial"/>
+    </div>
+    <div class="column">
+        <partial name="RegisterPartial"/>
+    </div>
 </div>
-<div class="column">
-<partial name="RegisterPartial"/>
-</div>
-</div>
+@section Scripts{
+    <script src="~/js/login/login.js"></script>
+}

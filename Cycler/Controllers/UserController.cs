@@ -2,34 +2,38 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.Extensions.Options;
-using System.Text;
-using Microsoft.IdentityModel.Tokens;
+ using System.Linq;
 using System.Security.Claims;
 using Cycler.Controllers.Models;
 using Cycler.Data.Models;
-using Cycler.Data.Repositories.Interfaces;
-using Cycler.Helpers;
+ using Cycler.Data.Repositories.Interfaces;
+ using Cycler.Extensions;
+ using Cycler.Views.Models;
  using Microsoft.AspNetCore.Authentication;
  using Microsoft.AspNetCore.Authorization;
-
-namespace Cycler.Controllers
+using static Cycler.Helpers.Utility;
+ namespace Cycler.Controllers
 {
 
     public class UserController : Controller
     {
         private IUserRepository userRepository;
+        private IEventRepository eventRepository;
+        private IFriendshipRepository friendshipRepository;
+        private IInvitationRepository invitationRepository;
         private IMapper mapper;
-        private readonly AppSettings appSettings;
         public UserController(
             IUserRepository userRepository,
-            IMapper mapper,
-            IOptions<AppSettings> appSettings)
+            IEventRepository eventRepository,
+            IFriendshipRepository friendshipRepository,
+            IInvitationRepository invitationRepository,
+            IMapper mapper)
         {
-            this.userRepository = userRepository;
+            this.userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
             this.mapper = mapper;
-            this.appSettings = appSettings.Value;
+            this.eventRepository = eventRepository ?? throw new ArgumentNullException(nameof(eventRepository));
+            this.friendshipRepository = friendshipRepository ?? throw new ArgumentNullException(nameof(friendshipRepository));
+            this.invitationRepository = invitationRepository ?? throw new ArgumentNullException(nameof(invitationRepository));
         }
 
         public IActionResult Login()
@@ -56,6 +60,7 @@ namespace Cycler.Controllers
                 new Claim(ClaimTypes.Name,  user.FirstName),
                 new Claim(ClaimTypes.Email,user.Email),
                 new Claim(ClaimTypes.Surname,user.LastName), 
+                new Claim("TimeOffset",model.TimeOffset)
             };  
   
             var grandmaIdentity = new ClaimsIdentity(userClaims, "User Identity");  
@@ -106,6 +111,75 @@ namespace Cycler.Controllers
                 // return error message if there was an exception
                 return BadRequest(new { message = ex.Message });
             }
+        }
+
+        
+        [Route("User/SendFriendRequest/{friendId}")]
+        public IActionResult SendFriendRequest([FromRoute]string friendId)
+        {
+            if (friendId == null)
+            {
+                throw new ArgumentNullException(nameof(friendId));
+            }
+            var userId = User.Identity.GetUserId();
+            var parsedId = TryParseObjectId(friendId);
+            if (!parsedId.HasValue) return NotFound(nameof(friendId));
+            friendshipRepository.SendFriendRequest(userId, parsedId.Value);
+
+            return RedirectToAction("Profile", new {friendId = friendId});
+        }
+
+        public IActionResult Invitations()
+        {
+            var user = User.Identity.GetUserId();
+            var events = invitationRepository.GetUserEventInvitations(user);
+            return View(events.Select(e =>
+            {
+                var invitation = invitationRepository.GetByUserEvent(User.Identity.GetUserId(), e.Id);
+                var user = userRepository.GetById(invitation.InviterId);
+                return new InvitationViewModel
+                    {
+                        InvitationId = invitation.InvitationId.ToString(),
+                        EventName = e.Name, EventDescription = e.Description, 
+                        EventStartTime = e.StartTime.ToUserTime(User),
+                        InvitationTime = invitation.InvitationTime.ToUserTime(User), InvitedBy = new User{FirstName = user.FirstName,LastName = user.LastName,FullName = user.FullName}
+                        
+                    };
+            }));
+        }
+        
+        public IActionResult Events()
+        {
+            var user = User.Identity.GetUserId();
+            return View(eventRepository.GetEventsForUser(user));
+        }
+
+        [Route("User/Profile/{userId}")]
+        public IActionResult Profile([FromRoute] string userId)
+        {
+            if (userId == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var parsed = TryParseObjectId(userId);
+            if (!parsed.HasValue)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var user = userRepository.GetById(parsed.Value);
+            var model = mapper.Map<UserViewModel>(user);
+            if (user.Friends.Contains(User.Identity.GetUserId()))
+            {
+                model.isFriend = true;
+            }
+            else
+            {
+                model.FriendshipRequestSent =  friendshipRepository.FriendshipRequestSent(User.Identity.GetUserId(), user.Id);
+            }
+
+            return View(model);
         }
         
         
