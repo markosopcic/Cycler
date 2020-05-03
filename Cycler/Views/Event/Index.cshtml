@@ -1,6 +1,8 @@
 ﻿@model IEnumerable<Cycler.Views.Models.EventViewModel>
 
-
+<head>
+    <link rel="stylesheet" href="~/css/event/index.css"/>
+</head>
 @{
     ViewData["Title"] = "Upcoming events";
 }
@@ -9,26 +11,33 @@
 
 @foreach (var ev in Model)
 {
-    <div>
-        @ev.Name
-    </div>
-    <div>
-        Description: @ev.Description
-    </div>
-    <div>
-        Start Time: @ev.StartTime.ToLocalTime()
-    </div>
-    @if (ev.Finished)
-    {
-        <div>
-            Finished Time: @ev.EndTime
+    <div class="row">
+        <div class="column">
+            <div>
+                @ev.Name
+            </div>
+            <div>
+                Description: @ev.Description
+            </div>
+            <div>
+                Start Time: @ev.StartTime.ToLocalTime()
+            </div>
+            @if (ev.Finished)
+            {
+                <div>
+                    Finished Time: @ev.EndTime
+                </div>
+            }
+            <div>
+                Invited: @ev.Invited
+            </div>
+            <div>
+                Accepted: @ev.Accepted
+            </div>
         </div>
-    }
-    <div>
-        Invited: @ev.Invited
-    </div>
-    <div>
-        Accepted: @ev.Accepted
+        <div class="column">
+            <a style="float:right" class="btn btn-primary" href="/Event/Details/@ev.Id">Details</a>
+        </div>
     </div>
     <hr/>
 }

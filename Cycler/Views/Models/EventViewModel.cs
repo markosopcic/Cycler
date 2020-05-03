@@ -7,6 +7,8 @@ namespace Cycler.Views.Models
 {
     public class EventViewModel
     {
+        
+        public string Id { get; set; }
         public bool Private { get; set; }
         
         public string Name { get; set; }

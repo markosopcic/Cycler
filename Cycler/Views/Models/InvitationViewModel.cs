@@ -6,6 +6,7 @@ namespace Cycler.Views.Models
 {
     public class InvitationViewModel
     {   
+        public string EventId { get; set; }
         public string InvitationId { get; set; }
         public string EventName { get; set; }
         public string EventDescription { get; set; }

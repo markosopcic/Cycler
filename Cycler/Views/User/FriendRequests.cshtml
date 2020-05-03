@@ -1,0 +1,30 @@
+﻿@model IEnumerable<Cycler.Views.Models.FriendRequestViewModel>
+
+
+
+@{
+    ViewData["Title"] = "Friend requests";
+}
+
+@if (!Model.Any())
+{
+    <h3 class="info">You currently have no friendship requests!</h3>
+}
+else
+{
+    <h3 class="info" style="display:none">You currently have no friendship requests!</h3>
+}
+
+@foreach (var request in Model)
+{
+    <div style="margin-top:2%" class="request">
+        <a href="/User/Profile/@request.Sender">@request.SenderName</a>
+        <label>Received: @request.TimeSent</label>
+        <button id="@request.Sender" style="margin-right:2%" class="accept btn btn-primary">Accept</button><button class="decline btn btn-danger">Decline</button>
+    </div>
+    <hr/>
+}
+
+@section Scripts{
+    <script src="~/js/user/friendRequests.js"></script>
+}

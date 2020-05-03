@@ -17,6 +17,10 @@ namespace Cycler.Views.Models
         
         public bool FriendshipRequestSent { get; set; }
         
+        public string FriendshipRequestId { get; set; }
+        
+        public bool FriendshipRequestReceived { get; set; }
+        
         public bool isFriend { get; set; }
     }
 }

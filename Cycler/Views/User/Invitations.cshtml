@@ -19,9 +19,9 @@ else
 
 @foreach (var e in Model)
 {
-    <div class="invitation" id="@e.InvitationId" >
+    <div style="margin-top:2%;margin-bottom: 2%" class="invitation row" id="@e.InvitationId" >
         <div class="column">
-            <label>@e.EventName</label>
+            <label>Name: @e.EventName</label>
             <p></p>
             <label>Description:
                 @if (e.EventDescription.Length > 50)
@@ -33,18 +33,17 @@ else
                     @e.EventDescription
                 }
             </label>
-            <p></p>
-            <label>Start Time: @e.EventStartTime.ToLocalTime()</label>
+
         </div>
         <div class="column">
-            <p></p>
             <label>Invited By: @e.InvitedBy.FirstName @e.InvitedBy.LastName</label>
             <p></p>
             <label>Invitation received: @e.InvitationTime</label>
             <p></p>
+            <label>Start Time: @e.EventStartTime.ToLocalTime()</label>
         </div>
         <div class="column">
-            <button class="btn btn-primary accept">Accept</button><p></p> <button class="btn btn-danger decline">Decline</button>
+            <a class="btn btn-secondary" href="/Event/Details/@e.EventId" style="width:50%">Details</a><p></p><button class="btn btn-primary accept" style="width:50%">Accept</button><p></p> <button style="width:50%" class="btn btn-danger decline">Decline</button>
         </div>
     </div>
     <hr/>

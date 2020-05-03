@@ -1,4 +1,6 @@
-﻿using MongoDB.Bson;
+﻿using System.Collections.Generic;
+using Cycler.Data.Models;
+using MongoDB.Bson;
 
 namespace Cycler.Data.Repositories.Interfaces
 {
@@ -6,6 +8,8 @@ namespace Cycler.Data.Repositories.Interfaces
     {
         bool SendFriendRequest(ObjectId fromUser, ObjectId toUser);
         void AcceptFriendshipRequest(bool accept, ObjectId user, ObjectId from);
-        public bool FriendshipRequestSent(ObjectId from, ObjectId to);
+        public FriendshipRequest FindFriendshipRequest(ObjectId firstUser, ObjectId secondUser);
+
+        public IEnumerable<FriendshipRequest> GetUserRequests(ObjectId userId);
     }
 }

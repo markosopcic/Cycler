@@ -35,6 +35,28 @@ using static Cycler.Helpers.Utility;
             this.friendshipRepository = friendshipRepository ?? throw new ArgumentNullException(nameof(friendshipRepository));
             this.invitationRepository = invitationRepository ?? throw new ArgumentNullException(nameof(invitationRepository));
         }
+        
+        public IActionResult AcceptFriendRequest([FromQuery]string fromUser,[FromQuery]bool accept)
+        {
+            if(fromUser == null) throw new ArgumentNullException(nameof(fromUser));
+            var parsed = TryParseObjectId(fromUser);
+            if(!parsed.HasValue) return BadRequest("Invalid user id!");
+            friendshipRepository.AcceptFriendshipRequest(accept,User.Identity.GetUserId(),parsed.Value);
+            return Ok();
+        }
+
+        public IActionResult FriendRequests()
+        {
+            var userId = User.Identity.GetUserId();
+            var requests = friendshipRepository.GetUserRequests(userId);
+            return View(requests.Select(e => new FriendRequestViewModel
+            {
+                Id = e.Id.ToString(),
+                Sender = e.Sender.ToString(),
+                SenderName = userRepository.GetById(e.Sender).FullName,
+                TimeSent = e.TimeSent.ToUserTime(User),
+            }));
+        }
 
         public IActionResult Login()
         {
@@ -139,11 +161,11 @@ using static Cycler.Helpers.Utility;
                 var user = userRepository.GetById(invitation.InviterId);
                 return new InvitationViewModel
                     {
+                        EventId = invitation.EventId.ToString(),
                         InvitationId = invitation.InvitationId.ToString(),
                         EventName = e.Name, EventDescription = e.Description, 
                         EventStartTime = e.StartTime.ToUserTime(User),
                         InvitationTime = invitation.InvitationTime.ToUserTime(User), InvitedBy = new User{FirstName = user.FirstName,LastName = user.LastName,FullName = user.FullName}
-                        
                     };
             }));
         }
@@ -176,7 +198,26 @@ using static Cycler.Helpers.Utility;
             }
             else
             {
-                model.FriendshipRequestSent =  friendshipRepository.FriendshipRequestSent(User.Identity.GetUserId(), user.Id);
+                var request =   friendshipRepository.FindFriendshipRequest(User.Identity.GetUserId(), user.Id);
+                if (request == null)
+                {
+                    model.FriendshipRequestReceived = false;
+                    model.FriendshipRequestSent = false;
+                }
+                else
+                {
+                    if (User.Identity.GetUserId() == request.Receiver)
+                    {
+                        model.FriendshipRequestReceived = true;
+                        model.FriendshipRequestSent = false;
+                        model.FriendshipRequestId = request.Id.ToString();
+                    }
+                    else
+                    {
+                        model.FriendshipRequestSent = true;
+                        model.FriendshipRequestReceived = false;
+                    }
+                }
             }
 
             return View(model);

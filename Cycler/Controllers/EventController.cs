@@ -105,6 +105,7 @@ namespace Cycler.Controllers
             var events = eventRepository.GetEventsForUser(User.Identity.GetUserId());
             var result = events.Select(e => new EventViewModel
                 {
+                    Id = e.Id.ToString(),
                     Name = e.Name,
                     Description = e.Description,
                     Private =  e.Private,
