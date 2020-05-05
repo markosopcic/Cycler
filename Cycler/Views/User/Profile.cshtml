@@ -1,4 +1,8 @@
 ﻿@model Cycler.Views.Models.UserViewModel
+
+@{
+    ViewData["Title"] = "Profile " + Model.FullName;
+}
 @if (Model.isFriend)
 {
     <div>Friend status: Friends</div>
