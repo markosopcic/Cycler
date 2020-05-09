@@ -36,7 +36,7 @@ namespace Cycler
             services.AddRazorPages().AddRazorRuntimeCompilation();
             services.AddControllersWithViews();
             
-                       services.AddSingleton<MongoContext>(
+                       services.AddSingleton(
                 new MongoContext(Configuration.GetConnectionString("MongoConnectionString"),Configuration.GetValue<string>("DatabaseName")));
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IEventRepository, EventRepository>();
