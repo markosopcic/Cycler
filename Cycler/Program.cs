@@ -19,7 +19,7 @@ namespace Cycler
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder => { webBuilder
-                    .UseUrls("http://0.0.0.0:80","https://0.0.0.0:443")
+                    //.UseUrls("http://0.0.0.0:80","https://0.0.0.0:443")
                     .UseStartup<Startup>(); });
     }
 }
