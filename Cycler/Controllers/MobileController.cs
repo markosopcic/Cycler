@@ -55,7 +55,7 @@ namespace Cycler.Controllers
                     new Claim(ClaimTypes.Name,  user.FirstName),
                     new Claim(ClaimTypes.Email,user.Email),
                     new Claim(ClaimTypes.Surname,user.LastName), 
-                    new Claim("TimeOffset",model.TimeOffset ?? "0")
+                    new Claim("TimeOffset",model.TimeOffset?.ToString() ?? "0")
                 };  
   
                 var grandmaIdentity = new ClaimsIdentity(userClaims, "User Identity");  

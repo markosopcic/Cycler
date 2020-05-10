@@ -10,6 +10,6 @@ namespace Cycler.Controllers.Models
         [Required]
         public string Password { get; set; }
         
-        public string TimeOffset { get; set; }
+        public int? TimeOffset { get; set; }
     }
 }

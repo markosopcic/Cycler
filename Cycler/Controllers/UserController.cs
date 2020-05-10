@@ -82,7 +82,7 @@ using static Cycler.Helpers.Utility;
                 new Claim(ClaimTypes.Name,  user.FirstName),
                 new Claim(ClaimTypes.Email,user.Email),
                 new Claim(ClaimTypes.Surname,user.LastName), 
-                new Claim("TimeOffset",model.TimeOffset)
+                new Claim("TimeOffset",model.TimeOffset?.ToString())
             };  
   
             var grandmaIdentity = new ClaimsIdentity(userClaims, "User Identity");  
