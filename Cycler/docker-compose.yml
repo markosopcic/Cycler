@@ -6,12 +6,14 @@ services:
     build:
       context: ./Nginx
       dockerfile: Nginx.Dockerfile
+      
     ports:
        - "80:80"
        - "443:443"
     restart: always
-
+   
   api:
+    
     depends_on:
       - reverseproxy
     build:
