@@ -64,7 +64,7 @@ namespace Cycler.Data.Repositories
         public void AcceptFriendshipRequest(bool accept, ObjectId user,ObjectId from)
         {
             var exists = context.FriendshipRequest.Find(e => e.Sender == from && e.Receiver == user && !e.Accepted)
-                .First() != null;
+                .FirstOrDefault() != null;
             if (!exists) return;
             if (accept)
             {

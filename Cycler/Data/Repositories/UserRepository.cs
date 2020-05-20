@@ -84,7 +84,7 @@ namespace Cycler.Data.Repositories
 
             term = term.ToLower();
             
-            return context.User.Find(e => e.FullName.ToLower().Contains(term)).ToEnumerable();
+            return context.User.Find(e => e.FullName.Contains(term)).ToEnumerable();
         }
 
 

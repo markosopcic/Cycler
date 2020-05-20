@@ -36,7 +36,7 @@ namespace Cycler.Data.Repositories
             
             return  context.Event.
                 Find(e => e.OwnerId == userId 
-                          || e.AcceptedUsers.Any(e => e ==userId ) )
+                          || e.AcceptedUsers.Any(e => e == userId ) )
                 .Project<Event>(Builders<Event>.Projection
                     .Exclude(e => e.Coordinates))
                 .ToList();

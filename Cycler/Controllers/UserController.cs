@@ -114,6 +114,12 @@ using static Cycler.Helpers.Utility;
             {
                 // create user
                 var user = userRepository.Register(model);
+                if (user == null)
+                {
+                    ViewBag.HasMessage = true;
+                    ViewBag.Message = "Email already registered.";
+                    return View("Login");
+                }
                 var userClaims = new List<Claim>()  
                 {  
                     new Claim(ClaimTypes.NameIdentifier,  user.Id.ToString()),
@@ -148,7 +154,7 @@ using static Cycler.Helpers.Utility;
             if (!parsedId.HasValue) return NotFound(nameof(friendId));
             friendshipRepository.SendFriendRequest(userId, parsedId.Value);
 
-            return RedirectToAction("Profile", new {friendId = friendId});
+            return RedirectToAction("Profile", new {userId = friendId});
         }
 
         public IActionResult Invitations()

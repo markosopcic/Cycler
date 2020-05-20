@@ -11,6 +11,8 @@ namespace Cycler.Data.Models
         public ObjectId Id { get; set; }
 
         public string FirstName { get; set; }
+        
+        public bool? IsActive { get; set; }
         public string LastName { get; set; }
         public string FullName { get; set; }
         public List<ObjectId> Friends { get; set; } = new List<ObjectId>();
