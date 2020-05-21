@@ -11,6 +11,7 @@ using Cycler.Views.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using static Cycler.Helpers.Utility;
 
 namespace Cycler.Controllers
@@ -24,19 +25,22 @@ namespace Cycler.Controllers
         private IEventRepository eventRepository;
         private IFriendshipRepository friendshipRepository;
         private IInvitationRepository invitationRepository;
+        private IHubContext<LocationHub> locationHub;
         private IMapper mapper;
         public MobileController(
             IUserRepository userRepository,
             IEventRepository eventRepository,
             IFriendshipRepository friendshipRepository,
             IInvitationRepository invitationRepository,
-            IMapper mapper)
+            IMapper mapper,
+            IHubContext<LocationHub> locationHub)
         {
             this.userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
             this.mapper = mapper;
             this.eventRepository = eventRepository ?? throw new ArgumentNullException(nameof(eventRepository));
             this.friendshipRepository = friendshipRepository ?? throw new ArgumentNullException(nameof(friendshipRepository));
             this.invitationRepository = invitationRepository ?? throw new ArgumentNullException(nameof(invitationRepository));
+            this.locationHub = locationHub ?? throw new ArgumentNullException(nameof(locationHub));
         }
         [AllowAnonymous]
         [HttpPost]
@@ -156,10 +160,10 @@ namespace Cycler.Controllers
         }
         
         [Route("/mobile/accept-invitation")]
-        public IActionResult AcceptInvitation([FromQuery] string InvitationId,[FromQuery]bool accept)
+        public IActionResult AcceptInvitation([FromQuery] string invitationId,[FromQuery]bool accept)
         {
-            var parsedId = TryParseObjectId(InvitationId);
-            if (InvitationId == null || parsedId == null)
+            var parsedId = TryParseObjectId(invitationId);
+            if (invitationId == null || parsedId == null)
             {
                 return BadRequest("Invitation id cannot be null");
             }
@@ -170,6 +174,15 @@ namespace Cycler.Controllers
             }
 
             return BadRequest("Invalid invitation id!");
+        }
+
+        [HttpPost]
+        [Route("/mobile/send-location")]
+        public IActionResult SendLocation([FromBody] LocationModel position)
+        {
+            locationHub.Clients.Group(position.Id).SendCoreAsync(User.Identity.GetSpecificClaim(ClaimTypes.Name) + " "+ User.Identity.GetSpecificClaim(ClaimTypes.Surname),
+                new object[] {position.Longitude, position.Latitude});
+            return Ok();
         }
         
     }

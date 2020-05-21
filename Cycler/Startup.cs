@@ -50,6 +50,7 @@ namespace Cycler
             var key = Encoding.ASCII.GetBytes(appSettings.Secret);
             services.AddCors();
             services.AddControllers();
+            services.AddSignalR();
             
             services.AddAuthentication("CookieAuthentication")  
                 .AddCookie("CookieAuthentication", config =>  
@@ -101,6 +102,7 @@ namespace Cycler
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapHub<LocationHub>("/locationHub");
             });
             
         }
