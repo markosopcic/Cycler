@@ -70,7 +70,7 @@ namespace Cycler.Controllers
   
                 var userPrincipal = new ClaimsPrincipal(new[] { grandmaIdentity });  
                 HttpContext.SignInAsync(userPrincipal).Wait();
-                return Ok();
+                return Ok(new {userId = user.Id.ToString()});
             }
         }
         [Route("/mobile/logout")]
@@ -183,6 +183,26 @@ namespace Cycler.Controllers
             locationHub.Clients.Group(position.Id).SendCoreAsync(User.Identity.GetSpecificClaim(ClaimTypes.Name) + " "+ User.Identity.GetSpecificClaim(ClaimTypes.Surname),
                 new object[] {position.Longitude, position.Latitude});
             return Ok();
+        }
+
+        [HttpGet]
+        [Route("/mobile/get-active-events")]
+        public IActionResult GetActiveEvents()
+        {
+            var activeEvents = eventRepository.GetActiveEvents(User.Identity.GetUserId());
+            return Json(activeEvents.Select(e =>
+            {
+                var owner = userRepository.GetById(e.OwnerId);
+                return new
+                {
+                    e.Description,
+                    Id = e.Id.ToString(),
+                    OwnerName = owner.FirstName+" "+owner.LastName,
+                    OwnerId = owner.Id.ToString(),
+                    e.Name,
+                    StartTime = e.StartTime.ToUserTime(User)
+                };
+            }));
         }
         
     }

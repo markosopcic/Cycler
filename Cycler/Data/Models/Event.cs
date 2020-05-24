@@ -27,6 +27,6 @@ namespace Cycler.Data.Models
         
         public bool Finished { get; set; }
         
-        public Dictionary<ObjectId,IEnumerable<Location>> Coordinates { get; set; } = new Dictionary<ObjectId, IEnumerable<Location>>();
+        public List<UserLocations> UserLocations { get; } = new List<UserLocations>();
     }
 }

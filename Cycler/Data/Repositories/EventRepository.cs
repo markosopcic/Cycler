@@ -38,7 +38,11 @@ namespace Cycler.Data.Repositories
                 Find(e => e.OwnerId == userId 
                           || e.AcceptedUsers.Any(e => e == userId ) )
                 .Project<Event>(Builders<Event>.Projection
-                    .Exclude(e => e.Coordinates))
+                    .Include(e => e.Name)
+                    .Include(e => e.Description)
+                    .Include(e => e.OwnerId)
+                    .Include(e => e.StartTime)
+                    .Include(e => e.Id))
                 .ToList();
             }
 
@@ -53,8 +57,26 @@ namespace Cycler.Data.Repositories
                 throw new ArgumentNullException(nameof(eventId));
             }
 
-            return context.Event.Find(e => e.Id == eventId).Project<Event>(Builders<Event>.Projection
-                .Exclude(e => e.Coordinates)).FirstOrDefault();
+            return context.Event.Find(e => e.Id == eventId).Project<Event>(Builders<Event>.Projection 
+                .Include(e => e.Name)
+                .Include(e => e.Description)
+                .Include(e => e.OwnerId)
+                .Include(e => e.StartTime)
+                .Include(e => e.Id)).FirstOrDefault();
+        }
+
+        public IEnumerable<Event> GetActiveEvents(ObjectId userId)
+        {
+            return context.Event
+                .Find(e => (e.OwnerId == userId || e.AcceptedUsers.Any(e => e == userId)) && !e.Finished &&
+                           e.StartTime >= DateTime.UtcNow.AddMinutes(-15) && e.StartTime <=DateTime.UtcNow.AddHours(8))
+                .Project<Event>(Builders<Event>.Projection
+                    .Include(e => e.Name)
+                    .Include(e => e.Description)
+                    .Include(e => e.OwnerId)
+                    .Include(e => e.StartTime)
+                    .Include(e => e.Id))
+                    .ToList();
         }
     }
 }

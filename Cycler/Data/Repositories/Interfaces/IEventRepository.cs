@@ -16,6 +16,8 @@ namespace Cycler.Data.Repositories.Interfaces
 
         public Event GetEvent(ObjectId eventId);
 
+        public IEnumerable<Event> GetActiveEvents(ObjectId userId);
+
     }
     
 

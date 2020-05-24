@@ -48,7 +48,7 @@ namespace Cycler.Data.Repositories
             var u = new User
             {
                 FirstName = user.FirstName, LastName = user.LastName, Email = user.Email,
-                FullName = user.FirstName.Trim() +" "+ user.LastName.Trim(),
+                FullName = (user.FirstName.Trim() +" "+ user.LastName.Trim()).ToLower(),
                 PasswordHash = passwordHash,Salt = passwordSalt,
                 DateJoined = DateTime.Now};
             context.User.InsertOne(u);
