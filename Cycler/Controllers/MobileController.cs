@@ -205,5 +205,68 @@ namespace Cycler.Controllers
             }));
         }
         
+        
+        [Route("/mobile/profile/{userId}")]
+        public IActionResult Profile([FromRoute] string userId)
+        {
+            if (userId == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var parsed = TryParseObjectId(userId);
+            if (!parsed.HasValue)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var user = userRepository.GetById(parsed.Value);
+            var model = mapper.Map<UserViewModel>(user);
+            if (user.Friends.Contains(User.Identity.GetUserId()))
+            {
+                model.isFriend = true;
+            }
+            else
+            {
+                var request =   friendshipRepository.FindFriendshipRequest(User.Identity.GetUserId(), user.Id);
+                if (request == null)
+                {
+                    model.FriendshipRequestReceived = false;
+                    model.FriendshipRequestSent = false;
+                }
+                else
+                {
+                    if (User.Identity.GetUserId() == request.Receiver)
+                    {
+                        model.FriendshipRequestReceived = true;
+                        model.FriendshipRequestSent = false;
+                        model.FriendshipRequestId = request.Id.ToString();
+                    }
+                    else
+                    {
+                        model.FriendshipRequestSent = true;
+                        model.FriendshipRequestReceived = false;
+                    }
+                }
+            }
+
+            return Json(model);
+        }
+        
+        [Route("/mobile/SendFriendRequest/{friendId}")]
+        public IActionResult SendFriendRequest([FromRoute]string friendId)
+        {
+            if (friendId == null)
+            {
+                throw new ArgumentNullException(nameof(friendId));
+            }
+            var userId = User.Identity.GetUserId();
+            var parsedId = TryParseObjectId(friendId);
+            if (!parsedId.HasValue) return NotFound(nameof(friendId));
+            friendshipRepository.SendFriendRequest(userId, parsedId.Value);
+
+            return Ok();
+        }
+        
     }
 }
