@@ -33,6 +33,8 @@ else
 <h5>Joined: @Model.DateJoined</h5>
 <h5>Friends: @Model.NumOfFriends</h5>
 
+@Model.isActive
+@Model.isFriend
 @if (Model.isActive && Model.isFriend)
 {
     <h2>Live Tracking</h2>

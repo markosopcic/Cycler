@@ -50,7 +50,7 @@ namespace Cycler.Data.Repositories
                 FirstName = user.FirstName, LastName = user.LastName, Email = user.Email,
                 FullName = (user.FirstName.Trim() +" "+ user.LastName.Trim()).ToLower(),
                 PasswordHash = passwordHash,Salt = passwordSalt,
-                DateJoined = DateTime.Now};
+                DateJoined = DateTime.UtcNow};
             context.User.InsertOne(u);
             return u;
 
@@ -96,7 +96,7 @@ namespace Cycler.Data.Repositories
         {
             return context.User.Find(e =>
                 e.Friends.Contains(userId) && e.LastActiveTrace.HasValue &&
-                DateTime.UtcNow.AddMinutes(-5) > e.LastActiveTrace.Value).ToList();
+                DateTime.UtcNow.AddMinutes(-5) < e.LastActiveTrace.Value).ToList();
         }
 
         public List<Event> GetActiveEvents(ObjectId userId)

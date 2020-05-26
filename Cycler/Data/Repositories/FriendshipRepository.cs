@@ -35,7 +35,7 @@ namespace Cycler.Data.Repositories
 
         public bool SendFriendRequest(ObjectId fromUser, ObjectId toUser)
         {
-            var request = new FriendshipRequest {Receiver = toUser, Sender = fromUser, TimeSent = DateTime.Now};
+            var request = new FriendshipRequest {Receiver = toUser, Sender = fromUser, TimeSent = DateTime.UtcNow};
             var receiver = context.User.Find(e => e.Id == toUser);
             var existingFriend =
                 context.User.Find(e => e.Id == fromUser && e.Friends.Any(f => f == toUser)).FirstOrDefault() != null 
@@ -52,7 +52,7 @@ namespace Cycler.Data.Repositories
             {
                 Receiver = toUser,
                 Sender = fromUser,
-                TimeSent = DateTime.Now
+                TimeSent = DateTime.UtcNow
             });
 
             return true;
@@ -74,7 +74,7 @@ namespace Cycler.Data.Repositories
                     Builders<User>.Update.AddToSet(p => p.Friends,user));
                 context.FriendshipRequest.FindOneAndUpdate(e => e.Sender == from && e.Receiver == user,
                     Builders<FriendshipRequest>.Update.Set(e => e.Accepted, true)
-                        .Set(e => e.TimeAccepted, DateTime.Now));
+                        .Set(e => e.TimeAccepted, DateTime.UtcNow));
             }
             else
             {

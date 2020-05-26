@@ -27,7 +27,7 @@ namespace Cycler.Data.Repositories
             var invitation = context.Invitation.FindOneAndUpdate(e => e.InvitationId == invitationId && !e.Accepted,
                 Builders<Invitation>.Update
                     .Set(e => e.Accepted, true)
-                    .Set(e => e.AcceptedTime, DateTime.Now));
+                    .Set(e => e.AcceptedTime, DateTime.UtcNow));
 
             if (invitation == null) return false;
             var evt = context.Event.FindOneAndUpdate(e => e.Id == invitation.EventId,
@@ -61,7 +61,7 @@ namespace Cycler.Data.Repositories
                 var i = new Invitation
                 {
                     EventId = eventId,
-                    Accepted = false, AcceptedTime = null,InvitationTime = DateTime.Now, 
+                    Accepted = false, AcceptedTime = null,InvitationTime = DateTime.UtcNow, 
                     CanInvite = canInvite, 
                     InvitedId = invitedId,
                     InviterId = inviterId
