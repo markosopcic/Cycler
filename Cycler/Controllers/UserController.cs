@@ -198,6 +198,9 @@ using static Cycler.Helpers.Utility;
 
             var user = userRepository.GetById(parsed.Value);
             var model = mapper.Map<UserViewModel>(user);
+            model.isActive = user.LastActiveTrace.HasValue &&
+                             DateTime.UtcNow.AddMinutes(-5) < user.LastActiveTrace.Value;
+            
             if (user.Friends.Contains(User.Identity.GetUserId()))
             {
                 model.isFriend = true;

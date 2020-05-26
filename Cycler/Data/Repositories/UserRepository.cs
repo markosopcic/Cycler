@@ -87,10 +87,25 @@ namespace Cycler.Data.Repositories
             return context.User.Find(e => e.FullName.Contains(term)).ToEnumerable();
         }
 
+        public void UpdateOnlineStatus(ObjectId userId)
+        {
+            context.User.FindOneAndUpdateAsync(e => e.Id == userId, Builders<User>.Update.Set(f => f.LastActiveTrace, DateTime.UtcNow));
+        }
 
+        public List<User> GetActiveFriends(ObjectId userId)
+        {
+            return context.User.Find(e =>
+                e.Friends.Contains(userId) && e.LastActiveTrace.HasValue &&
+                DateTime.UtcNow.AddMinutes(-5) > e.LastActiveTrace.Value).ToList();
+        }
 
+        public List<Event> GetActiveEvents(ObjectId userId)
+        {
+            return context.Event
+                .Find(e => (e.OwnerId == userId || e.AcceptedUsers.Any(u => u == userId))
+                           && !e.Finished && e.StartTime < DateTime.UtcNow.AddMinutes(15)).ToList();
+        }
 
-        
 
         private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
@@ -100,7 +115,7 @@ namespace Cycler.Data.Repositories
             using (var hmac = new System.Security.Cryptography.HMACSHA512())
             {
                 passwordSalt = hmac.Key;
-                passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+                passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
             }
         }
 
@@ -122,6 +137,8 @@ namespace Cycler.Data.Repositories
 
             return true;
         }
+        
+        
 
     }
 }

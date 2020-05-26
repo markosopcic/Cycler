@@ -1,8 +1,17 @@
 ﻿@model Cycler.Views.Models.UserViewModel
 
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aspnet-signalr/1.1.4/signalr.js"></script>
+      <script src="https://cesium.com/downloads/cesiumjs/releases/1.69/Build/Cesium/Cesium.js"></script>
+      <link href="https://cesium.com/downloads/cesiumjs/releases/1.69/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+    <script src="~/js/user/profile.js"></script>
+</head>
+
 @{
-    ViewData["Title"] = "Profile " + Model.FullName;
+    ViewData["Title"] = "Profile " + Model.FirstName +" "+ Model.LastName;
 }
+
+<input type="hidden" id="user-id-input" value="@Model.Id"/>
 @if (Model.isFriend)
 {
     <div>Friend status: Friends</div>
@@ -23,3 +32,10 @@ else
 <h4>Email: @Model.Email</h4>
 <h5>Joined: @Model.DateJoined</h5>
 <h5>Friends: @Model.NumOfFriends</h5>
+
+@if (Model.isActive && Model.isFriend)
+{
+    <h2>Live Tracking</h2>
+    <div id="cesiumContainer">
+    </div>
+}

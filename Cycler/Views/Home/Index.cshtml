@@ -1,4 +1,6 @@
-﻿@{
+﻿@model Cycler.Views.Models.HomeViewModel;
+
+@{
     ViewData["Title"] = "Home Page";
 }
 <head>
@@ -7,6 +9,12 @@
 
 <div class="sidebar">
     <a disabled="true">Active friends</a>
+    @foreach (var user in Model.ActiveFriends)
+    {
+        <div>
+            <a href="/User/Profile/@user.Id">@user.FirstName @user.LastName</a>
+        </div>
+    }
     <hr/>
 
 </div>

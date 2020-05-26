@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection.Metadata;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +13,8 @@ using Cycler.Data.Models;
 using Cycler.Data.Repositories;
 using Cycler.Data.Repositories.Interfaces;
 using Cycler.Helpers;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -51,16 +54,32 @@ namespace Cycler
             services.AddCors();
             services.AddControllers();
             services.AddSignalR();
-            
-            services.AddAuthentication("CookieAuthentication")  
-                .AddCookie("CookieAuthentication", config =>  
-                {  
-                    config.Cookie.Name = "IdentityCookie";  
-                    config.LoginPath = "/User/Login";  
-                });  
+
+            services.AddAuthentication("CookieAuthentication")
+                .AddCookie("CookieAuthentication", config =>
+                {
+                    config.Cookie.Name = "IdentityCookie";
+                    config.LoginPath = "/User/Login";
+                }).AddJwtBearer(options =>
+                {
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            var accessToken = context.Request.Query["access_token"];
+                            var path = context.HttpContext.Request.Path;
+                            if (path.ToString().StartsWith("/locationHub"))
+                            {
+                                context.Token = accessToken;
+                            }
+
+                            return Task.CompletedTask;
+                        }
+                    };
+                });
 
 
-           services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

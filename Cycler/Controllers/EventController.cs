@@ -41,6 +41,7 @@ namespace Cycler.Controllers
 
             return View(new EventViewModel
             {
+                Id = e.Id.ToString(),
                 Name = e.Name,
                 Description = e.Description,
                 Private = e.Private,

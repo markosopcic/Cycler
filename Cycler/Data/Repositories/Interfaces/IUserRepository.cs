@@ -19,9 +19,15 @@ using Cycler.Data.Models;
 
         IEnumerable<User> SearchUsers(string term);
 
+        void UpdateOnlineStatus(ObjectId userId);
+
+        List<User> GetActiveFriends(ObjectId userId);
+
+        List<Event> GetActiveEvents(ObjectId userId);
 
 
- 
-        
+
+
+
     }
 }

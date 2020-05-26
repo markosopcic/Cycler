@@ -180,8 +180,13 @@ namespace Cycler.Controllers
         [Route("/mobile/send-location")]
         public IActionResult SendLocation([FromBody] LocationModel position)
         {
-            locationHub.Clients.Group(position.Id).SendCoreAsync(User.Identity.GetSpecificClaim(ClaimTypes.Name) + " "+ User.Identity.GetSpecificClaim(ClaimTypes.Surname),
-                new object[] {position.Longitude, position.Latitude});
+            var idToBroadcastTo = position.Id ?? User.Identity.GetUserId().ToString();
+            locationHub.Clients.Group(idToBroadcastTo).SendCoreAsync("Position",
+                new object[] {User.Identity.GetSpecificClaim(ClaimTypes.Name) + " "+ User.Identity.GetSpecificClaim(ClaimTypes.Surname),User.Identity.GetUserId().ToString(),position.Longitude, position.Latitude});
+            if (position.UpdateOnlineStatus)
+            {
+                userRepository.UpdateOnlineStatus(User.Identity.GetUserId());
+            }
             return Ok();
         }
 

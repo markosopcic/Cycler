@@ -27,6 +27,6 @@ namespace Cycler.Data.Models
         
         public bool Finished { get; set; }
         
-        public List<UserLocations> UserLocations { get; } = new List<UserLocations>();
+        public List<UserLocations>? UserLocations { get; } = new List<UserLocations>();
     }
 }
