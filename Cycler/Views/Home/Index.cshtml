@@ -8,7 +8,15 @@
 </head>
 
 <div class="sidebar">
-    <a disabled="true">Active friends</a>
+    @if (Model.ActiveFriends.Count > 0)
+    {
+        <a disabled="true">Active friends</a>
+    }
+    else
+    {
+        <a disabled="true">You don't have any active  friends</a>
+    }
+
     @foreach (var user in Model.ActiveFriends)
     {
         <div>
@@ -16,5 +24,21 @@
         </div>
     }
     <hr/>
+    
+        @if (Model.ActiveEvents.Count > 0)
+        {
+            <a disabled="true">Active events</a>
+        }
+        else
+        {
+            <a disabled="true">You don't have any active events</a>
+        }
+    
+        @foreach (var ev in Model.ActiveEvents)
+        {
+            <div>
+                <a href="/Event/Details/@ev.Id">@ev.Name</a>
+            </div>
+        }
 
 </div>

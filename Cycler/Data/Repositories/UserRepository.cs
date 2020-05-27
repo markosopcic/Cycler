@@ -103,7 +103,13 @@ namespace Cycler.Data.Repositories
         {
             return context.Event
                 .Find(e => (e.OwnerId == userId || e.AcceptedUsers.Any(u => u == userId))
-                           && !e.Finished && e.StartTime < DateTime.UtcNow.AddMinutes(15)).ToList();
+                           && !e.Finished && (e.StartTime > DateTime.UtcNow.AddHours(-12)  || e.StartTime > DateTime.UtcNow.AddMinutes(-15))).Project<Event>(Builders<Event>.Projection
+                .Include(e => e.Name)
+                .Include(e => e.Description)
+                .Include(e => e.OwnerId)
+                .Include(e => e.StartTime)
+                .Include(e => e.Id))
+                .ToList();
         }
 
 

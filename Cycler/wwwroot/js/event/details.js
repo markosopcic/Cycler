@@ -1,6 +1,7 @@
 ﻿﻿var viewer = null;
 var users = {}
 var names = {}
+var userTracked = {}
 var connection = null;
 var trackedUser = null;
 
@@ -14,11 +15,27 @@ $(document).ready(function(){
         shouldAnimate: true
     });
 
+    $("#user-search").on("input", function (e) {
+        if (e.target.value.length === 0) {
+            $(".user").show();
+            return;
+        }
+        var users = $(".user");
+        for (var i = 0; i < users.length; i++) {
+            if (users[i].innerText.toLowerCase().includes(e.target.value.toLowerCase())) {
+                $(users[i]).show();
+            } else {
+                $(users[i]).hide();
+            }
+        }
+    });
+
     connection = new signalR.HubConnectionBuilder().withUrl("/locationHub").build();
 
     connection.on("Position", function (name,id, longitude, latitude) {
-        if (users[id] === undefined || users[id] === null) {
+        if (users[id] === undefined || users[id] === null && (userTracked[id] === true || userTracked[id] === undefined || userTracked[id] === null)) {
             try {
+                addToSearchBar(name,id)
                 var entity = viewer.entities.add({
                     position: Cesium.Cartesian3.fromDegrees(latitude, longitude),
                     model: {
@@ -75,3 +92,49 @@ $(document).ready(function(){
      });
 
 })
+
+function addToSearchBar(name,id){
+    var exists = $("div[value='"+id+"']").length;
+    if(exists) return;
+    var newElement = document.createElement("div");
+    newElement.className = "form-control user";
+    newElement.style = "outline-style: none;";
+    newElement.innerText = name;
+    newElement.setAttribute("value", id);
+    newElement.onclick = function (event) { userClicked(event); };
+    $("#active-users")[0].appendChild(newElement);
+    var newButton = document.createElement("button");
+    newButton.className = "btn btn-info";
+    newButton.style = "float:right;height:100%;display: inline-flex;text-align: center;font-size:x-small;z-index:999999";
+    newButton.innerText = "Focus";
+    newButton.onclick = function (event) { onUserFocused(event, viewer, users, id); };
+    newElement.appendChild(newButton);
+    newElement.click();
+}
+
+function userClicked(event) {
+    var senderElementName = event.target.getAttribute("value");
+    if (senderElementName === null || senderElementName === "button") {
+        return;
+    }
+    senderElementName = senderElementName.toLowerCase();
+    if ($(event.target).attr("selected") !== "selected") {
+        $(event.target).attr("selected", true);
+        $(event.target).css("background-color", "coral");
+    } else {
+        $(event.target).attr("selected", false);
+        $(event.target).css("background-color", "");
+    }
+    if (event.target.getAttribute("selected") === "selected") {
+        userTracked[senderElementName] = true;
+    } else {
+        userTracked[senderElementName] = false;
+        viewer.entities.remove(users[senderElementName]);
+        users[senderElementName] = null;
+    }
+}
+
+function onUserFocused(event, viewer, users, id) {
+    if (users[id] === undefined) return;
+    viewer.flyTo(users[id]).then(e => { viewer.trackedEntity = users[id]; });
+}

@@ -183,7 +183,8 @@ namespace Cycler.Controllers
             var idToBroadcastTo = position.Id ?? User.Identity.GetUserId().ToString();
             locationHub.Clients.Group(idToBroadcastTo).SendCoreAsync("Position",
                 new object[] {User.Identity.GetSpecificClaim(ClaimTypes.Name) + " "+ User.Identity.GetSpecificClaim(ClaimTypes.Surname),User.Identity.GetUserId().ToString(),position.Longitude, position.Latitude});
-            if (position.UpdateOnlineStatus)
+            
+            if (position.Id == null && position.UpdateOnlineStatus)
             {
                 userRepository.UpdateOnlineStatus(User.Identity.GetUserId());
             }
