@@ -26,5 +26,7 @@ namespace Cycler.Views.Models
         
         public string OwnerId { get; set; }
         
+        public List<EventUserModel> UserIDs { get; set; }
+        
     }
 }

@@ -12,7 +12,9 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using MongoDB.Bson;
 using static Cycler.Helpers.Utility;
+using Location = Cycler.Data.Models.Location;
 
 namespace Cycler.Controllers
 {
@@ -272,6 +274,53 @@ namespace Cycler.Controllers
             friendshipRepository.SendFriendRequest(userId, parsedId.Value);
 
             return Ok();
+        }
+
+        [Route("/mobile/upload-event")]
+        [HttpPost]
+        public IActionResult UploadMobileEvent(MobileEventModel eventModel)
+        {
+            if (eventModel.UserId != User.Identity.GetUserId().ToString())
+            {
+                return Unauthorized();
+            }
+            
+            ObjectId eventId;
+            var timeStart = new DateTime
+                (1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            var userLocations = new UserEventData
+            {
+                Duration = TimeSpan.FromSeconds(eventModel.Duration),
+                Meters = eventModel.Meters,
+                UserId = User.Identity.GetUserId(),
+                Locations = eventModel.Locations.Select(e => new Location
+                {
+                    Latitude = e.Latitude, Longitude = e.Longitude,
+                    Time = timeStart.AddMilliseconds(e.TimeMillis)
+                }).ToList()
+            };
+            if (eventModel.EventId == null || !ObjectId.TryParse(eventModel.EventId, out eventId))
+            {
+                var e = new Event
+                {
+                    Finished = true,
+                    OwnerId = User.Identity.GetUserId(),
+                    Name = eventModel.Name,
+                    Private = true,
+                    StartTime = timeStart.AddMilliseconds(eventModel.StarTimeMillis),
+                    UserLocations = new List<UserEventData>()
+                    {
+                        userLocations
+                        }
+
+                };
+                eventRepository.AddEvent(e);
+                return Ok();
+            }
+
+                eventRepository.AddLocationsForEvent(eventId,userLocations);
+                return Ok();
+
         }
         
     }

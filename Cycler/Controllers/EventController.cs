@@ -38,18 +38,20 @@ namespace Cycler.Controllers
                 return RedirectToAction("Index");
             }
             var e = eventRepository.GetEvent(parsedId.Value);
-
+            var users = eventRepository.GetUsersForEvent(e.Id);
             return View(new EventViewModel
             {
                 Id = e.Id.ToString(),
                 Name = e.Name,
                 Description = e.Description,
                 Private = e.Private,
+                Finished =  e.Finished,
                 StartTime = e.StartTime.ToUniversalTime(),
                 EndTime = e.EndTime?.ToUniversalTime(),
                 Accepted = invitationRepository.CountAccepted(parsedId.Value),
                 Invited = invitationRepository.CountInvited(parsedId.Value),
-                OwnerId = e.OwnerId.ToString()
+                OwnerId = e.OwnerId.ToString(),
+                UserIDs = users
             });
 
 
