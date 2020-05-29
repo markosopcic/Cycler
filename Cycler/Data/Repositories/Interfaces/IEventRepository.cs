@@ -23,7 +23,9 @@ namespace Cycler.Data.Repositories.Interfaces
 
         public List<EventUserModel> GetUsersForEvent(ObjectId eventId);
 
-        public List<UserEventData> GetUserEventData(ObjectId eventId,List<ObjectId> users);
+        public IEnumerable<UserEventData> GetUserEventData(ObjectId eventId,List<ObjectId> users);
+
+        public IEnumerable<Event> GetEventFeed(ObjectId userId, int skip = 0, int take = 10);
 
     }
     

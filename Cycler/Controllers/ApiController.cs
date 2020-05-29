@@ -4,6 +4,7 @@ using System.Linq;
 using Cycler.Controllers.Models;
 using Cycler.Data.Repositories.Interfaces;
 using Cycler.Extensions;
+using Cycler.Views.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
@@ -63,7 +64,26 @@ namespace Cycler.Controllers
                 }
             }
 
-            return Ok(eventRepository.GetUserEventData(eId, ids).ToDictionary(x => x.UserId.ToString(),x => x.Locations));
+            return Ok(eventRepository.GetUserEventData(eId, ids).ToDictionary(x => x.UserId.ToString(),x => x.Locations.Select(
+                e => { e.Time = e.Time.ToUserTime(User);
+                    return e;
+                })));
+        }
+
+        [Route("get-event-feed")]
+        public IActionResult GetEventFeed(int skip = 0, int take = 10)
+        {
+            var eventFeed = eventRepository.GetEventFeed(User.Identity.GetUserId(),skip, take).ToList().Select(e =>
+            {
+                e.StartTime = e.StartTime.ToUserTime(User);
+                return e;
+            }).ToList();
+            var users = userRepository.GetUsersByIds(eventFeed.SelectMany(e => e.UserEventData).Select(e => e.UserId)
+                .ToList());
+            return PartialView("../Home/PartialFeed",new FeedViewModel{
+                EventFeed = eventFeed,
+                Users = users
+            });
         }
     }
 }

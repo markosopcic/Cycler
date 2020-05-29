@@ -62,10 +62,15 @@ namespace Cycler.Data.Repositories
                 .Include(e => e.Name)
                 .Include(e => e.Description)
                 .Include(e => e.OwnerId)
+                .Include( e => e.Private)
                 .Include( e => e.Finished)
                 .Include(e => e.StartTime)
                 .Include(e => e.EndTime)
-                .Include(e => e.Id)).FirstOrDefault();
+                .Include(e => e.Id)
+                .Include("UserEventData.Duration")
+                .Include("UserEventData.Meters")
+                .Include("UserEventData.UserId"))
+                .FirstOrDefault();
         }
 
         public IEnumerable<Event> GetActiveEvents(ObjectId userId)
@@ -89,7 +94,7 @@ namespace Cycler.Data.Repositories
             if (eventData == null) throw new ArgumentNullException(nameof(eventData));
 
             context.Event.UpdateOne(e => e.Id == eventId,
-                Builders<Event>.Update.AddToSet(e => e.UserLocations, eventData));
+                Builders<Event>.Update.AddToSet(e => e.UserEventData, eventData));
         }
 
         public List<EventUserModel> GetUsersForEvent(ObjectId eventId)
@@ -97,9 +102,9 @@ namespace Cycler.Data.Repositories
             if(eventId == null) throw new ArgumentNullException(nameof(eventId));
 
             var e = context.Event.Find(e => e.Id == eventId)
-                .Project<Event>(Builders<Event>.Projection.Include("UserLocations.UserId")).FirstOrDefault();
+                .Project<Event>(Builders<Event>.Projection.Include("UserEventData.UserId")).FirstOrDefault();
             if(e == null) return new List<EventUserModel>();
-            var ids = e.UserLocations.Select(e => e.UserId).ToList();
+            var ids = e.UserEventData.Select(e => e.UserId).ToList();
             var users = context.User.Find(e => ids.Contains(e.Id)).Project<User>(Builders<User>.Projection
                 .Include(e => e.Id).Include(e => e.FirstName).Include(e => e.LastName)).ToList();
             return users.Select(e => new EventUserModel
@@ -109,11 +114,32 @@ namespace Cycler.Data.Repositories
             }).ToList();
         }
 
-        public List<UserEventData> GetUserEventData(ObjectId eventId,List<ObjectId> users)
+        public IEnumerable<UserEventData> GetUserEventData(ObjectId eventId,List<ObjectId> users)
         {
             if(eventId == null) throw new ArgumentNullException(nameof(eventId));
             return context.Event.Find(e => e.Id == eventId).Project(e => new Event
-                {UserLocations = e.UserLocations.Where(e => users.Contains(e.UserId)).ToList()}).FirstOrDefault().UserLocations;
+                {UserEventData = e.UserEventData.Where(e => users.Contains(e.UserId)).ToList()}).FirstOrDefault().UserEventData;
+        }
+
+        public IEnumerable<Event> GetEventFeed(ObjectId userId, int skip = 0, int take = 10)
+        {
+            if(userId == null) throw new ArgumentNullException(nameof(userId));
+
+            var user = context.User.Find(e => e.Id == userId).FirstOrDefault();
+            if (user == null) return null;
+            return context.Event.Find(Builders<Event>.Filter.Eq(e => e.Finished,true) & (Builders<Event>.Filter.In(e => e.OwnerId,user.Friends) | Builders<Event>.Filter.AnyIn(e => e.AcceptedUsers, user.Friends))).Skip(skip)
+                .Limit(take).Project<Event>(Builders<Event>.Projection
+                    .Include(e => e.Description)
+                    .Include(e => e.Name)
+                    .Include(e => e.OwnerId)
+                    .Include(e => e.AcceptedUsers)
+                    .Include(e => e.StartTime)
+                    .Include(e => e.EndTime)
+                    .Include(e => e.Id)
+                    .Include("UserEventData.Duration")
+                    .Include("UserEventData.Meters")
+                    .Include("UserEventData.UserId"))
+                .ToList();
         }
     }
 }

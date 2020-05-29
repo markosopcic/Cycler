@@ -5,6 +5,7 @@
 }
 <head>
     <link rel="stylesheet" href="~/css/home/index.css"/>
+    <script src="~/js/home/index.js"></script>
 </head>
 
 <div class="sidebar">
@@ -25,20 +26,24 @@
     }
     <hr/>
     
-        @if (Model.ActiveEvents.Count > 0)
-        {
-            <a disabled="true">Active events</a>
-        }
-        else
-        {
-            <a disabled="true">You don't have any active events</a>
-        }
+    @if (Model.ActiveEvents.Count > 0)
+    {
+        <a disabled="true">Active events</a>
+    }
+    else
+    {
+        <a disabled="true">You don't have any active events</a>
+    }
     
-        @foreach (var ev in Model.ActiveEvents)
-        {
-            <div>
-                <a href="/Event/Details/@ev.Id">@ev.Name</a>
-            </div>
-        }
+    @foreach (var ev in Model.ActiveEvents)
+    {
+        <div>
+            <a href="/Event/Details/@ev.Id">@ev.Name</a>
+        </div>
+    }
 
 </div>
+
+<div id="feed">
+</div>
+<button id="load-more-feed-button" style="width:100%" class="btn btn-primary">Load more</button>

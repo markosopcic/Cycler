@@ -19,10 +19,12 @@ namespace Cycler.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private IUserRepository userRepository;
-        public HomeController(ILogger<HomeController> logger,IUserRepository userRepository)
+        private IEventRepository eventRepository;
+        public HomeController(ILogger<HomeController> logger,IUserRepository userRepository,IEventRepository eventRepository)
         {
             _logger = logger;
             this.userRepository = userRepository;
+            this.eventRepository = eventRepository;
 
         }
 

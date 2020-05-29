@@ -112,6 +112,14 @@ namespace Cycler.Data.Repositories
                 .ToList();
         }
 
+        public List<User> GetUsersByIds(List<ObjectId> userIds)
+        {
+            if(userIds == null) throw new ArgumentNullException(nameof(userIds));
+
+            return context.User.Find(Builders<User>.Filter.In(e => e.Id, userIds)).Project<User>(Builders<User>.Projection
+                .Include(e => e.Id).Include(e => e.FirstName).Include(e => e.LastName).Include(e => e.Email)).ToList();
+        }
+
 
         private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {

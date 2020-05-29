@@ -7,7 +7,7 @@ namespace Cycler.Data.Models
 {
     public class Event
     {
-        [BsonId]
+
         public ObjectId Id { get; set; }
         
         public ObjectId OwnerId { get; set; }
@@ -27,6 +27,6 @@ namespace Cycler.Data.Models
         
         public bool Finished { get; set; }
         
-        public List<UserEventData>? UserLocations { get; set; } = new List<UserEventData>();
+        public List<UserEventData>? UserEventData { get; set; } = new List<UserEventData>();
     }
 }

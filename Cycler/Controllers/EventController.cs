@@ -51,7 +51,8 @@ namespace Cycler.Controllers
                 Accepted = invitationRepository.CountAccepted(parsedId.Value),
                 Invited = invitationRepository.CountInvited(parsedId.Value),
                 OwnerId = e.OwnerId.ToString(),
-                UserIDs = users
+                UserIds = users,
+                UserEventData = e.UserEventData
             });
 
 

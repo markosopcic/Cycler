@@ -11,6 +11,7 @@ namespace Cycler.Controllers.Models
         public string EventId { get; set; }
         public List<Location> Locations { get; set; }
         public long StarTimeMillis { get; set; }
+        public long EndTimeMillis { get; set; }
         public string Name { get; set; }
         public string OwnerId { get; set; }
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Cycler.Data.Models;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
@@ -26,7 +27,9 @@ namespace Cycler.Views.Models
         
         public string OwnerId { get; set; }
         
-        public List<EventUserModel> UserIDs { get; set; }
+        public List<EventUserModel> UserIds { get; set; }
+        
+        public List<UserEventData> UserEventData { get; set; }
         
     }
 }

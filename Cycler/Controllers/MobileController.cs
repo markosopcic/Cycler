@@ -155,8 +155,8 @@ namespace Cycler.Controllers
                     EventId = invitation.EventId.ToString(),
                     InvitationId = invitation.InvitationId.ToString(),
                     EventName = e.Name, EventDescription = e.Description, 
-                    EventStartTime = e.StartTime,
-                    InvitationTime = invitation.InvitationTime, InvitedBy = new User{FirstName = user.FirstName,LastName = user.LastName,FullName = user.FullName}
+                    EventStartTime = e.StartTime.ToUserTime(User),
+                    InvitationTime = invitation.InvitationTime.ToUserTime(User), InvitedBy = new User{FirstName = user.FirstName,LastName = user.LastName,FullName = user.FullName}
                 };
             }));
         }
@@ -306,9 +306,10 @@ namespace Cycler.Controllers
                     Finished = true,
                     OwnerId = User.Identity.GetUserId(),
                     Name = eventModel.Name,
+                    EndTime = timeStart.AddMilliseconds(eventModel.EndTimeMillis),
                     Private = true,
                     StartTime = timeStart.AddMilliseconds(eventModel.StarTimeMillis),
-                    UserLocations = new List<UserEventData>()
+                    UserEventData = new List<UserEventData>()
                     {
                         userLocations
                         }

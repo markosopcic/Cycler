@@ -16,7 +16,7 @@ $(document).ready(function(){
 
     connection = new signalR.HubConnectionBuilder().withUrl("/locationHub").build();
 
-    connection.on("Position", function (name,id, longitude, latitude) {
+    connection.on("Position", function (name,id, latitude, longitude) {
         if (users[id] === undefined || users[id] === null) {
             try {
                 var entity = viewer.entities.add({
@@ -33,6 +33,9 @@ $(document).ready(function(){
                 Cesium.when(promise, function (position) {
                     position = position[0];
                     entity.position = Cesium.Cartesian3.fromDegrees(latitude, longitude, position.height);
+                    let origin = Cesium.Cartographic.fromCartesian(model.position._value)
+                    let b = bearing(origin.latitude,origin.longitude,position.latitude,position.longitude);
+                    model.orientation = Cesium.HeadingPitchRoll(b,0,0);
 
                 });
                 var lab = {
@@ -63,7 +66,11 @@ $(document).ready(function(){
             Cesium.when(promise, function (position) {
                 var model = users[id];
                 position = position[0];
+                
+                //let origin = Cesium.Cartographic.fromCartesian(model.position._value)
+                //let b = bearing(origin.latitude,origin.longitude,position.latitude,position.longitude);
                 model.position = Cesium.Cartesian3.fromDegrees(latitude, longitude, position.height);
+                //model.orientation = new Cesium.HeadingPitchRoll(b,b,b);
             });
         }
 
@@ -75,3 +82,22 @@ $(document).ready(function(){
      });
 
 })
+
+
+function toRadians(degrees) {
+    return degrees * Math.PI / 180;
+};
+
+// Converts from radians to degrees.
+function toDegrees(radians) {
+    return radians * 180 / Math.PI;
+}
+
+
+function bearing(startLat, startLng, destLat, destLng){
+     let y = Math.sin(destLng - startLng) * Math.cos(destLat);
+    let x = Math.cos(startLat) * Math.sin(destLat) -
+        Math.sin(startLat) * Math.cos(destLat) * Math.cos(destLng - startLng);
+    let brng = Math.atan2(y, x);
+    return brng + 2*Math.PI;
+}

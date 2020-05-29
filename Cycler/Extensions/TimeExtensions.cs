@@ -13,7 +13,7 @@ namespace Cycler.Extensions
             Int32 offsetTime;
             var parsed = Int32.TryParse(offset, out offsetTime);
             if (!parsed) return time;
-            return time.AddMinutes(offsetTime);
+            return time.AddMinutes(-offsetTime);
         } 
         
         public static DateTime UtcFromUser(this DateTime time, ClaimsPrincipal user)
@@ -23,7 +23,7 @@ namespace Cycler.Extensions
             Int32 offsetTime;
             var parsed = Int32.TryParse(offset, out offsetTime);
             if (!parsed) return time;
-            return time.AddMinutes(-offsetTime);
+            return time.AddMinutes(offsetTime);
         } 
     }
 }

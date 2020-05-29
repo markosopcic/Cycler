@@ -25,6 +25,8 @@ using Cycler.Data.Models;
 
         List<Event> GetActiveEvents(ObjectId userId);
 
+        List<User> GetUsersByIds(List<ObjectId> userIds);
+
 
 
 

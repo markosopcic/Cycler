@@ -1,0 +1,16 @@
+﻿@model Cycler.Views.Models.FeedViewModel
+
+@foreach(var e in Model.EventFeed)
+{
+    <div class="feed-item">
+    @{
+        var user = Model.Users.First(u => u.Id == e.OwnerId);
+        var duration = @e.UserEventData.First(e => e.UserId == user.Id).Duration;
+        <h4>@e.Name - @user.FirstName @user.LastName - @e.StartTime.ToString("f")</h4>
+        <a class="btn btn-primary" asp-controller="Event" asp-action="Details" asp-route-eventId="@e.Id" style="float:right">Details</a>
+        <h5>Duration: @duration.Hours h @duration.Minutes m @duration.Seconds s</h5>
+        <h5>Distance: @e.UserEventData.First(e => e.UserId == user.Id).Meters m </h5>
+    }
+    <hr/>
+    </div>
+}

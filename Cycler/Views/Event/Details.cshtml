@@ -17,9 +17,9 @@
 <input id="event-id-input" type="hidden" value="@Model.Id"/>
 
 <label class="text-body">Started: @Model.StartTime</label><p></p>
-@if (@Model.Finished)
+@if (Model.Finished)
 {
-    <label class="text-body"Ended: @Model.EndTime ></label><p></p>
+    <label class="text-body">Finished: @Model.EndTime </label><p></p>
 }
 
 @if (!Model.Private)
@@ -52,7 +52,7 @@
 {
     <h2>Review</h2>
     <select style="width:30%;padding-bottom: 2%" multiple id="users-select">
-        @foreach (var user in Model.UserIDs)
+        @foreach (var user in Model.UserIds)
         {
             <option value="@user.UserId">@user.Name</option>
         }
