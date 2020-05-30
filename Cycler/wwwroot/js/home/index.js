@@ -9,7 +9,7 @@
             if(result.trim().length == 0){
                 alert("No more items to load!")
             }else{
-                document.getElementById("feed").innerHTML = result;
+                document.getElementById("feed").innerHTML += result;
             }
 
         })

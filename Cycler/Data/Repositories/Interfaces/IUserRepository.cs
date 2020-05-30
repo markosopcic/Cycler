@@ -27,6 +27,8 @@ using Cycler.Data.Models;
 
         List<User> GetUsersByIds(List<ObjectId> userIds);
 
+        List<User> SearchFriends(ObjectId user,string term);
+
 
 
 

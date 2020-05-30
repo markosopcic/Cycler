@@ -85,5 +85,12 @@ namespace Cycler.Controllers
                 Users = users
             });
         }
+        
+        [Route("search-friends")]
+        public IActionResult SearchFriends(string term)
+        {
+            if(term == null) throw new ArgumentNullException(nameof(term));
+            return Json(userRepository.SearchFriends(User.Identity.GetUserId(),term).Where( e => e.Id != User.Identity.GetUserId()).Select(e => new {Id = e.Id.ToString(),FullName = e.FirstName+" "+e.LastName,ResultType = "User"}));
+        }
     }
 }

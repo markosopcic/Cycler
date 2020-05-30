@@ -6,7 +6,7 @@
       height:"resolve",
       minimumInputLength: 3,
       ajax: {
-         url: '/api/search-users',
+         url: '/api/search-friends',
          data: function (params) {
             if (params.term === null || params.term === undefined || params.term === "")
                params.term = "";

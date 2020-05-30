@@ -128,7 +128,7 @@ namespace Cycler.Controllers
                 Id = e.Id.ToString(),
                 Sender = e.Sender.ToString(),
                 SenderName = userRepository.GetById(e.Sender).FullName,
-                TimeSent = e.TimeSent.ToUserTime(User),
+                TimeSent = e.TimeSent.ToUserTime(User).ToString("f"),
             }));
         }
         [Route("mobile/accept-friend-request")]
@@ -155,8 +155,8 @@ namespace Cycler.Controllers
                     EventId = invitation.EventId.ToString(),
                     InvitationId = invitation.InvitationId.ToString(),
                     EventName = e.Name, EventDescription = e.Description, 
-                    EventStartTime = e.StartTime.ToUserTime(User),
-                    InvitationTime = invitation.InvitationTime.ToUserTime(User), InvitedBy = new User{FirstName = user.FirstName,LastName = user.LastName,FullName = user.FullName}
+                    EventStartTime = e.StartTime.ToUserTime(User).ToString("f"),
+                    InvitationTime = invitation.InvitationTime.ToUserTime(User).ToString("f"), InvitedBy = new User{FirstName = user.FirstName,LastName = user.LastName,FullName = user.FullName}
                 };
             }));
         }
@@ -208,7 +208,7 @@ namespace Cycler.Controllers
                     OwnerName = owner.FirstName+" "+owner.LastName,
                     OwnerId = owner.Id.ToString(),
                     e.Name,
-                    StartTime = e.StartTime.ToUserTime(User)
+                    StartTime = e.StartTime.ToUserTime(User).ToString("f")
                 };
             }));
         }
@@ -319,9 +319,48 @@ namespace Cycler.Controllers
                 return Ok();
             }
 
-                eventRepository.AddLocationsForEvent(eventId,userLocations);
-                return Ok();
+            eventRepository.AddLocationsForEvent(eventId,userLocations);
+            eventRepository.CheckAndFinishEvent(User.Identity.GetUserId(), eventId);
+            return Ok();
 
+        }
+        
+        [Route("/mobile/get-event-feed")]
+        public IActionResult GetEventFeed([FromQuery]int skip = 0,[FromQuery] int take = 10)
+        {
+            var eventFeed = eventRepository.GetEventFeed(User.Identity.GetUserId(),skip, take).ToList().Select(e =>
+            {
+                e.StartTime = e.StartTime.ToUserTime(User);
+                return e;
+            }).ToList();
+            var users = userRepository.GetUsersByIds(eventFeed.SelectMany(e => e.UserEventData).Select(e => e.UserId)
+                .ToList());
+            var data = eventFeed.Select(e =>
+            {
+                var data = e.UserEventData.First(ev => ev.UserId == e.OwnerId);
+                return new
+                {
+                    e.Name, StartTime = e.StartTime.ToUserTime(User).ToString("f"), EndTime = e.EndTime?.ToUserTime(User).ToString("f"),
+                    Duration = data.Duration.TotalSeconds,
+                    data.Meters,
+                    User = users.First(u => u.Id == e.OwnerId).FirstName +" "+ users.First(u => u.Id == e.OwnerId).LastName
+                };
+            });
+            return Ok(data);
+        }
+
+        [Route("/mobile/user-profile")]
+        public IActionResult UserProfileData()
+        {
+            var user = userRepository.GetById(User.Identity.GetUserId());
+            return Ok(new
+            {
+                user.FirstName,
+                user.LastName,
+                user.Email,
+                DateJoined = user.DateJoined.ToUserTime(User).ToString("f"),
+                NumFriends = user.Friends.Count()
+            });
         }
         
     }

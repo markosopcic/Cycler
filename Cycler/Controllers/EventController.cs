@@ -28,6 +28,25 @@ namespace Cycler.Controllers
                 invitationRepository ?? throw new ArgumentNullException(nameof(eventRepository));
         }
 
+        [Route("Event/Delete/{eventId}")]
+        public IActionResult Delete([FromRoute]string eventId)
+        {
+            if (eventId == null)
+            {
+                return BadRequest();
+            }
+
+            ObjectId eId;
+            if (!ObjectId.TryParse(eventId, out eId))
+            {
+                return BadRequest();
+            }
+
+            eventRepository.DeleteEvent(User.Identity.GetUserId(), eId);
+
+            return RedirectToAction("Index");
+        }
+
         [Route("Event/Details/{eventId}")]
         public IActionResult Details([FromRoute] string eventId)
         {

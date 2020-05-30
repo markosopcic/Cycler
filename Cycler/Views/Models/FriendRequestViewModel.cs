@@ -8,7 +8,7 @@ namespace Cycler.Views.Models
     {
         public string Id { get; set; }
         public string Sender { get; set; }
-        public DateTime TimeSent { get; set; }
+        public string TimeSent { get; set; }
         public string SenderName { get; set; }
     }
 }

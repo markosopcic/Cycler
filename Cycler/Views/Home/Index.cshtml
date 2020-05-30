@@ -28,11 +28,11 @@
     
     @if (Model.ActiveEvents.Count > 0)
     {
-        <a disabled="true">Active events</a>
+        <a disabled="true">Upcoming events</a>
     }
     else
     {
-        <a disabled="true">You don't have any active events</a>
+        <a disabled="true">You don't have any upcoming events</a>
     }
     
     @foreach (var ev in Model.ActiveEvents)

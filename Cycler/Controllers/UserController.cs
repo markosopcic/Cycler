@@ -49,12 +49,16 @@ using static Cycler.Helpers.Utility;
         {
             var userId = User.Identity.GetUserId();
             var requests = friendshipRepository.GetUserRequests(userId);
-            return View(requests.Select(e => new FriendRequestViewModel
+            return View(requests.Select(e =>
             {
-                Id = e.Id.ToString(),
-                Sender = e.Sender.ToString(),
-                SenderName = userRepository.GetById(e.Sender).FullName,
-                TimeSent = e.TimeSent.ToUserTime(User),
+                var s = userRepository.GetById(e.Sender);
+                return new FriendRequestViewModel
+                {
+                    Id = e.Id.ToString(),
+                    Sender = e.Sender.ToString(),
+                    SenderName = s.FirstName +" "+s.LastName,
+                    TimeSent = e.TimeSent.ToUserTime(User).ToString("f"),
+                };
             }));
         }
 
@@ -170,8 +174,8 @@ using static Cycler.Helpers.Utility;
                         EventId = invitation.EventId.ToString(),
                         InvitationId = invitation.InvitationId.ToString(),
                         EventName = e.Name, EventDescription = e.Description, 
-                        EventStartTime = e.StartTime.ToUserTime(User),
-                        InvitationTime = invitation.InvitationTime.ToUserTime(User), InvitedBy = new User{FirstName = user.FirstName,LastName = user.LastName,FullName = user.FullName}
+                        EventStartTime = e.StartTime.ToUserTime(User).ToString("f"),
+                        InvitationTime = invitation.InvitationTime.ToUserTime(User).ToString("f"), InvitedBy = new User{FirstName = user.FirstName,LastName = user.LastName,FullName = user.FullName}
                     };
             }));
         }

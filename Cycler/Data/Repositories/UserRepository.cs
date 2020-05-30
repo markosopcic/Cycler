@@ -117,7 +117,25 @@ namespace Cycler.Data.Repositories
             if(userIds == null) throw new ArgumentNullException(nameof(userIds));
 
             return context.User.Find(Builders<User>.Filter.In(e => e.Id, userIds)).Project<User>(Builders<User>.Projection
-                .Include(e => e.Id).Include(e => e.FirstName).Include(e => e.LastName).Include(e => e.Email)).ToList();
+                .Include(e => e.Id)
+                .Include(e => e.FirstName)
+                .Include(e => e.LastName)
+                .Include(e => e.Email))
+                .ToList();
+        }
+
+        public List<User> SearchFriends(ObjectId user, string term)
+        {
+            if(user == null) throw new ArgumentNullException(nameof(user));
+            if(term == null) throw new ArgumentNullException(nameof(term));
+
+            return context.User.Find(Builders<User>.Filter.Where(e => e.FullName.Contains(term.ToLower())) &  Builders<User>.Filter.AnyEq(e => e.Friends, user))
+                .Project<User>(Builders<User>
+                .Projection
+                .Include(e => e.Id)
+                .Include(e => e.FirstName)
+                .Include(e => e.LastName))
+                .ToList();
         }
 
 
@@ -126,11 +144,9 @@ namespace Cycler.Data.Repositories
             if (password == null) throw new ArgumentNullException(nameof(password));
             if (string.IsNullOrWhiteSpace(password)) throw new ArgumentException("Value cannot be empty or whitespace only string.", "password");
 
-            using (var hmac = new System.Security.Cryptography.HMACSHA512())
-            {
-                passwordSalt = hmac.Key;
-                passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
-            }
+            using var hmac = new System.Security.Cryptography.HMACSHA512();
+            passwordSalt = hmac.Key;
+            passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
         }
 
         private static bool VerifyPasswordHash(string password, byte[] storedHash, byte[] storedSalt)

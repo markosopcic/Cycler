@@ -27,6 +27,10 @@ namespace Cycler.Data.Repositories.Interfaces
 
         public IEnumerable<Event> GetEventFeed(ObjectId userId, int skip = 0, int take = 10);
 
+        public void DeleteEvent(ObjectId userId, ObjectId eventId);
+
+        public void CheckAndFinishEvent(ObjectId userId, ObjectId eventId);
+
     }
     
 

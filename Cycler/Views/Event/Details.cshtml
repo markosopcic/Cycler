@@ -1,4 +1,5 @@
-﻿@model Cycler.Views.Models.EventViewModel
+﻿@using Cycler.Extensions
+@model Cycler.Views.Models.EventViewModel
 
 
 <head>
@@ -12,7 +13,10 @@
     ViewData["Title"] = @Model.Name;
 }
 
-<h3> @Model.Name</h3>
+<h3> @Model.Name</h3> @if (Model.OwnerId == User.Identity.GetUserId().ToString())
+                      {
+                          <a class="btn btn-danger" onclick="return confirm('Are you sure you want to delete?');" style="float:right" asp-controller="Event" asp-action="Delete" asp-route-eventId="@Model.Id">Delete Event</a>
+                      }
 
 <input id="event-id-input" type="hidden" value="@Model.Id"/>
 
