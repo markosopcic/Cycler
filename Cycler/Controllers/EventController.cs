@@ -8,6 +8,7 @@ using Cycler.Extensions;
 using Cycler.Views.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using MongoDB.Bson;
 using static Cycler.Helpers.Utility;
 
@@ -85,16 +86,27 @@ namespace Cycler.Controllers
 
         public IActionResult CreateEvent([FromForm] EventModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            if (model.StartTime < DateTime.UtcNow.ToUserTime(User))
+            {
+                ModelState.AddModelError("StartTime","Start Time has to be in the future!");
+                return View(model);
+            }
+            
             var e = eventRepository.AddEvent(new Event
             {
                 StartTime = model.StartTime.UtcFromUser(User),
                 EndTime = null,
-                Private = model.IsPrivate,
+                Private = false,
                 OwnerId = User.Identity.GetUserId(),
                 Name = model.Name,
                 Description =  model.Description
             });
-            foreach (var modelInvitedUserID in model.InvitedUserIDs)
+            foreach (var modelInvitedUserID in model.InvitedUsers)
             {
                 var parsed = TryParseObjectId(modelInvitedUserID);
                 if (parsed.HasValue)
@@ -125,20 +137,7 @@ namespace Cycler.Controllers
         
         public IActionResult Index()
         {
-            var events = eventRepository.GetEventsForUser(User.Identity.GetUserId());
-            var result = events.Select(e => new EventViewModel
-                {
-                    Id = e.Id.ToString(),
-                    Name = e.Name,
-                    Description = e.Description,
-                    Private =  e.Private,
-                    StartTime = e.StartTime.ToUserTime(User),
-                    EndTime =  e.EndTime?.ToUserTime(User),
-                    Accepted = invitationRepository.CountAccepted(e.Id),
-                    Invited = invitationRepository.CountInvited(e.Id),
-                    OwnerId = e.OwnerId.ToString()
-                }).OrderByDescending(e => e.StartTime);
-            return View(result);
+            return View();
         }
     }
 }

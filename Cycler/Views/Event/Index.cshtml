@@ -1,44 +1,20 @@
-﻿@model IEnumerable<Cycler.Views.Models.EventViewModel>
+﻿
 
 <head>
     <link rel="stylesheet" href="~/css/event/index.css"/>
+    <script src="~/js/event/index.js"></script>
 </head>
 @{
     ViewData["Title"] = "Upcoming events";
 }
 <a asp-action="Create" class="btn btn-block btn-primary">Create new event</a>
 <hr/>
+<div id="events">
+    
+</div>
 
-@foreach (var ev in Model)
-{
-    <div class="row">
-        <div class="column">
-            <div>
-                @ev.Name
-            </div>
-            <div>
-                Description: @ev.Description
-            </div>
-            <div>
-                Start Time: @ev.StartTime.ToLocalTime()
-            </div>
-            @if (ev.Finished)
-            {
-                <div>
-                    Finished Time: @ev.EndTime
-                </div>
-            }
-            <div>
-                Invited: @ev.Invited
-            </div>
-            <div>
-                Accepted: @ev.Accepted
-            </div>
-        </div>
-        <div class="column">
-            <a style="float:right" class="btn btn-primary" href="/Event/Details/@ev.Id">Details</a>
-        </div>
-    </div>
-    <hr/>
-}
+<button id="load-more-personal-events-button" style="width:100%" class="btn btn-primary">Load more</button>
+<hr/>
+
+
 

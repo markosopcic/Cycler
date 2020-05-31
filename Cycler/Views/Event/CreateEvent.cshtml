@@ -10,18 +10,21 @@
     <div class="form-row">
         <div class="form-group col-md-6">
             <label for ="name">Name</label>
+            <span asp-validation-for="@Model.Name" class="text-danger"></span>
             <input id="name" asp-for="@Model.Name" class="form-control" style="margin:auto" type="text" placeholder="Name"/>
         </div>
     </div>
     <div class="form-row">
         <div class="form-group col-md-6">
             <label for="description" >Description</label>
+                        <span asp-validation-for="@Model.Description" class="text-danger"></span>
             <input id="description" asp-for="@Model.Description" style="margin:auto" class="form-control" type="text" placeholder="Description"/>
         </div>
     </div>
     <div class="form-row">
         <div class="form-group col-md-6">
             <label for="starttime">Start time</label>
+                        <span asp-validation-for="@Model.StartTime" class="text-danger"></span>
             <input id="starttime" asp-for="@Model.StartTime" style="margin:auto" class="form-control" type="datetime-local"/>
         </div>
     </div>
@@ -29,7 +32,8 @@
     <div class="form-row">
         <div class="form-group col-md-6">
             <label for="starttime">Invite users</label>
-            <select id="invited-users" asp-for="@Model.InvitedUserIDs" style="margin:auto" class="form-control" multiple></select>
+                        <span asp-validation-for="@Model.InvitedUsers" class="text-danger"></span>
+            <select id="invited-users" asp-for="@Model.InvitedUsers" style="margin:auto" class="form-control" multiple></select>
         </div>
     </div>
     <button class="btn btn-primary" type="submit" style="width:50%;margin:auto">Create Event</button>

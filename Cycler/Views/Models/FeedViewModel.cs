@@ -5,7 +5,7 @@ namespace Cycler.Views.Models
 {
     public class FeedViewModel
     {
-        public List<Event> EventFeed { get; set; }
+        public List<Data.Models.Event> EventFeed { get; set; }
         
         public List<User> Users { get; set; }
     }

@@ -1,0 +1,34 @@
+﻿@model IEnumerable<Cycler.Views.Models.EventViewModel>
+
+@foreach (var ev in Model)
+{
+    <div class="row">
+        <div class="column">
+            <div>
+                @ev.Name
+            </div>
+            <div>
+                Description: @ev.Description
+            </div>
+            <div>
+                Start Time: @ev.StartTime.ToLocalTime()
+            </div>
+            @if (ev.Finished)
+            {
+                <div>
+                    Finished Time: @ev.EndTime
+                </div>
+            }
+            <div>
+                Invited: @ev.Invited
+            </div>
+            <div>
+                Accepted: @ev.Accepted
+            </div>
+        </div>
+        <div class="column">
+            <a style="float:right" class="btn btn-primary" href="/Event/Details/@ev.Id">Details</a>
+        </div>
+    </div>
+    <hr/>
+}

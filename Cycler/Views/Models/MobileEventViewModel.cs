@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using Cycler.Data.Models;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
 
 namespace Cycler.Views.Models
 {
-    public class EventViewModel
+    public class MobileEventViewModel
     {
-        
+                
         public string Id { get; set; }
         public bool Private { get; set; }
         
@@ -21,8 +19,8 @@ namespace Cycler.Views.Models
         public int Accepted { get; set; }
         public string OwnerName { get; set; }
         
-        public DateTime StartTime { get; set; }
-        public DateTime? EndTime { get; set; }
+        public string StartTime { get; set; }
+        public string? EndTime { get; set; }
         
         public bool Finished { get; set; }
         
@@ -30,7 +28,15 @@ namespace Cycler.Views.Models
         
         public List<EventUserModel> UserIds { get; set; }
         
-        public List<UserEventData> UserEventData { get; set; }
-        
+        public List<MobileUserEventData> UserEventData { get; set; }
+
+    }
+
+    public class MobileUserEventData
+    {
+        public string UserId { get; set; }
+        public string UserName { get; set; }
+        public long DurationSeconds { get; set; }
+        public long Meters { get; set; }
     }
 }

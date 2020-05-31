@@ -362,6 +362,84 @@ namespace Cycler.Controllers
                 NumFriends = user.Friends.Count()
             });
         }
-        
+
+
+        [Route("/mobile/get-user-events")]
+        public IActionResult GetUserEvents([FromQuery] int skip = 0, [FromQuery] int take = 10)
+        {
+
+                var events = eventRepository.GetEventsForUser(User.Identity.GetUserId(),skip,take);
+                var users = userRepository.GetUsersByIds(events.SelectMany(e => e.UserEventData).Select(e => e.UserId)
+                    .ToList());
+                var result = events.Select(e =>
+                {
+                    var owner = userRepository.GetById(e.OwnerId);
+                    return new MobileEventViewModel
+                    {
+                        OwnerName = owner.FirstName + " " + owner.LastName,
+                        Id = e.Id.ToString(),
+                        Name = e.Name,
+                        Description = e.Description,
+                        Private = e.Private,
+                        StartTime = e.StartTime.ToUserTime(User).ToString("f"),
+                        EndTime = e.EndTime?.ToUserTime(User).ToString("f"),
+                        Accepted = invitationRepository.CountAccepted(e.Id),
+                        Invited = invitationRepository.CountInvited(e.Id),
+                        OwnerId = e.OwnerId.ToString(),
+                        UserEventData = e.UserEventData.Select(f =>
+                            new MobileUserEventData
+                            {
+                                UserId = f.UserId.ToString(),
+                                Meters = f.Meters,
+                                DurationSeconds = (long) f.Duration.TotalSeconds,
+                                UserName = users.First(e => e.Id == f.UserId).FirstName + " " +
+                                           users.First(e => e.Id == f.UserId).LastName
+                            }
+                        ).ToList()
+                    };
+                }).OrderByDescending(x => x.StartTime);
+                return Ok(result);
+            
+        }
+
+        [Route("mobile/get-friends")]
+        public IActionResult GetFriends()
+        {
+            return Ok(userRepository.GetFriends(User.Identity.GetUserId()).Select(e =>
+                new {Id = e.Id.ToString(), FullName = e.FirstName + " " + e.LastName, ResultType = "User"}));
+        }
+
+
+        [HttpPost]
+        [Route("/mobile/create-event")]
+        public IActionResult CreateEvent(MobileCreateEventModel model)
+        {
+            if (model?.FriendIdsToInvite == null || model.Description == null || model.Name == null)
+                return BadRequest();
+            
+            var timeStart = new DateTime
+                (1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            
+            var e = eventRepository.AddEvent(new Event
+            {
+                StartTime = timeStart.AddMilliseconds(model.StartTimeMillis),
+                EndTime = null,
+                Private = false,
+                OwnerId = User.Identity.GetUserId(),
+                Name = model.Name,
+                Description =  model.Description
+            });
+            foreach (var modelInvitedUserID in model.FriendIdsToInvite)
+            {
+                var parsed = TryParseObjectId(modelInvitedUserID);
+                if (parsed.HasValue)
+                {
+                    invitationRepository.InviteUserToEvent(parsed.Value, User.Identity.GetUserId(), e.Id, true);
+                }
+
+            }
+            return Ok();
+        }
+
     }
 }

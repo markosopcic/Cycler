@@ -18,11 +18,14 @@ namespace Cycler.Controllers
     public class ApiController : Controller
     {
         private IUserRepository userRepository { get; }
+        
+        private IInvitationRepository invitationRepository { get; }
         private IEventRepository eventRepository { get; }
-        public ApiController(IUserRepository userRepository,IEventRepository eventRepository)
+        public ApiController(IUserRepository userRepository,IEventRepository eventRepository,IInvitationRepository invitationRepository)
         {
             this.userRepository = userRepository;
             this.eventRepository = eventRepository;
+            this.invitationRepository = invitationRepository;
         }
 
         [Route("search-users")]
@@ -84,6 +87,25 @@ namespace Cycler.Controllers
                 EventFeed = eventFeed,
                 Users = users
             });
+        }
+        
+        [Route("get-personal-event-feed")]
+        public IActionResult GetPersonalEventFeed(int skip = 0, int take = 10)
+        {
+            var events = eventRepository.GetEventsForUser(User.Identity.GetUserId(),skip,take);
+            var result = events.Select(e => new EventViewModel
+            {
+                Id = e.Id.ToString(),
+                Name = e.Name,
+                Description = e.Description,
+                Private = e.Private,
+                StartTime = e.StartTime.ToUserTime(User),
+                EndTime = e.EndTime?.ToUserTime(User),
+                Accepted = invitationRepository.CountAccepted(e.Id),
+                Invited = invitationRepository.CountInvited(e.Id),
+                OwnerId = e.OwnerId.ToString()
+            });
+            return PartialView("../Event/PartialIndexView",result);
         }
         
         [Route("search-friends")]

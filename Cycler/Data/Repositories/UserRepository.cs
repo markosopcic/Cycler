@@ -138,6 +138,19 @@ namespace Cycler.Data.Repositories
                 .ToList();
         }
 
+        public List<User> GetFriends(ObjectId user)
+        {
+            if(user == null) throw new ArgumentNullException(nameof(user));
+            
+            return context.User.Find(Builders<User>.Filter.AnyEq(e => e.Friends, user))
+                .Project<User>(Builders<User>
+                    .Projection
+                    .Include(e => e.Id)
+                    .Include(e => e.FirstName)
+                    .Include(e => e.LastName))
+                .ToList();
+        }
+
 
         private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {

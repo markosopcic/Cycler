@@ -28,7 +28,7 @@ namespace Cycler.Data.Repositories
 
         
 
-        public IEnumerable<Event> GetEventsForUser(ObjectId userId)
+        public IEnumerable<Event> GetEventsForUser(ObjectId userId,int skip, int take)
         {
             if (userId == null)
             {
@@ -39,11 +39,18 @@ namespace Cycler.Data.Repositories
                 Find(e => e.OwnerId == userId 
                           || e.AcceptedUsers.Any(e => e == userId ) )
                 .Project<Event>(Builders<Event>.Projection
-                    .Include(e => e.Name)
                     .Include(e => e.Description)
+                    .Include(e => e.Name)
                     .Include(e => e.OwnerId)
+                    .Include(e => e.AcceptedUsers)
                     .Include(e => e.StartTime)
-                    .Include(e => e.Id))
+                    .Include(e => e.EndTime)
+                    .Include(e => e.Id)
+                    .Include(e => e.Private)
+                    .Include("UserEventData.Duration")
+                    .Include("UserEventData.Meters")
+                    .Include("UserEventData.UserId")).SortByDescending(e => e.StartTime)
+                .Skip(skip).Limit(take)
                 .ToList();
             }
 
@@ -93,8 +100,26 @@ namespace Cycler.Data.Repositories
             if (eventId == null) throw new ArgumentNullException(nameof(eventId));
             if (eventData == null) throw new ArgumentNullException(nameof(eventData));
 
-            context.Event.UpdateOne(e => e.Id == eventId,
-                Builders<Event>.Update.AddToSet(e => e.UserEventData, eventData));
+            var exists = context.Event.Find(Builders<Event>.Filter.Where(e => e.Id == eventId) 
+                                            &  Builders<Event>.Filter.Eq("UserEventData.UserId", eventData.UserId))
+                .FirstOrDefault();
+            if (exists != null)
+            {
+                exists.UserEventData[0].Locations.AddRange(eventData.Locations);
+                var currUserData = exists.UserEventData.First(e => e.UserId == eventData.UserId);
+                context.Event.UpdateOne(Builders<Event>.Filter.Where(e => e.Id == eventId)
+                                        & Builders<Event>.Filter.Eq("UserEventData.UserId", eventData.UserId)
+                    , Builders<Event>.Update.Set("UserEventData.$.Duration",
+                            exists.UserEventData.First(e => e.UserId == eventData.UserId).Duration + eventData.Duration)
+                        .Set("UserEventData.$.Meters", exists.UserEventData.First(e => e.UserId == eventData.UserId).Meters + eventData.Meters)
+                        .Set("UserEventData.$.Locations", exists.UserEventData.First(e => e.UserId == eventData.UserId).Locations));
+            }
+            else
+            {
+                context.Event.UpdateOne(e => e.Id == eventId,
+                    Builders<Event>.Update.AddToSet(e => e.UserEventData, eventData));
+            }
+
         }
 
         public List<EventUserModel> GetUsersForEvent(ObjectId eventId)

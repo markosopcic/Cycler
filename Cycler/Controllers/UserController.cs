@@ -180,10 +180,10 @@ using static Cycler.Helpers.Utility;
             }));
         }
         
-        public IActionResult Events()
+        public IActionResult Events([FromQuery] int skip, [FromQuery] int take)
         {
             var user = User.Identity.GetUserId();
-            return View(eventRepository.GetEventsForUser(user));
+            return View(eventRepository.GetEventsForUser(user,skip,take));
         }
 
         [Route("User/Profile/{userId}")]
