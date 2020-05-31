@@ -201,7 +201,14 @@ using static Cycler.Helpers.Utility;
             }
 
             var user = userRepository.GetById(parsed.Value);
-            var model = mapper.Map<UserViewModel>(user);
+            var model = new UserViewModel
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                DateJoined = user.DateJoined.ToUserTime(User).ToString("f"),
+                NumOfFriends = user.Friends.Count
+            };
             model.isActive = user.LastActiveTrace.HasValue &&
                              DateTime.UtcNow.AddMinutes(-5) < user.LastActiveTrace.Value;
             

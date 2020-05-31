@@ -10,10 +10,10 @@ namespace Cycler.Views.Models
         public string InvitationId { get; set; }
         public string EventName { get; set; }
         public string EventDescription { get; set; }
-        public String EventStartTime { get; set; }
+        public string EventStartTime { get; set; }
         public User InvitedBy { get; set; }
         public bool CanInvite { get; set; }
         public bool Accepted { get; set; }
-        public String InvitationTime { get; set; }
+        public string InvitationTime { get; set; }
     }
 }
