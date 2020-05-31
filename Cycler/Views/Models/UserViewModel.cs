@@ -11,8 +11,8 @@ namespace Cycler.Views.Models
         public string LastName { get; set; }
         public string FullName { get; set; }
         public string Email { get; set; }
-        public DateTime DateJoined { get; set; }
-        public DateTime LastLogin { get; set; }
+        public string DateJoined { get; set; }
+        public string LastLogin { get; set; }
         public int NumOfFriends { get; set; }
         
         public bool FriendshipRequestSent { get; set; }

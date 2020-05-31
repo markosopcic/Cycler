@@ -92,10 +92,8 @@ namespace Cycler.Controllers
             {
                 return BadRequest("Invalid request. Check all fields and try again!");
             }
-            // map model to entity
             try
             {
-                // create user
                 var user = userRepository.Register(model);
                 var userClaims = new List<Claim>()  
                 {  
@@ -229,7 +227,14 @@ namespace Cycler.Controllers
             }
 
             var user = userRepository.GetById(parsed.Value);
-            var model = mapper.Map<UserViewModel>(user);
+            var model = new UserViewModel
+            {
+                Email = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                DateJoined = user.DateJoined.ToString("f"),
+                LastLogin = user.LastLogin.ToString("f")
+            };
             if (user.Friends.Contains(User.Identity.GetUserId()))
             {
                 model.isFriend = true;
