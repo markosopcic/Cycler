@@ -7,7 +7,6 @@
     {
         public double Longitude { get; set; }
         public double Latitude { get; set; }
-        [BsonDateTimeOptions]
         public DateTime Time { get; set; }
     }
 }

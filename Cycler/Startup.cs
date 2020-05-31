@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -55,27 +56,32 @@ namespace Cycler
             services.AddControllers();
             services.AddSignalR();
 
-            services.AddAuthentication("CookieAuthentication")
-                .AddCookie("CookieAuthentication", config =>
+            services.AddAuthentication("CookieAuthentication").AddJwtBearer(options =>
                 {
-                    config.Cookie.Name = "IdentityCookie";
-                    config.LoginPath = "/User/Login";
-                }).AddJwtBearer(options =>
-                {
+
+                    options.Authority = "CookieAuthentication";
                     options.Events = new JwtBearerEvents
                     {
                         OnMessageReceived = context =>
                         {
-                            var accessToken = context.Request.Query["access_token"];
+                            var accessToken = context.Request.Headers["Authorization"];
+
+                            // If the request is for our hub...
                             var path = context.HttpContext.Request.Path;
-                            if (path.ToString().StartsWith("/locationHub"))
+                            if (!string.IsNullOrEmpty(accessToken) &&
+                                (path.StartsWithSegments("/locationHub")))
                             {
+                                // Read the token out of the query string
                                 context.Token = accessToken;
                             }
-
                             return Task.CompletedTask;
                         }
                     };
+                })
+                .AddCookie("CookieAuthentication", config =>
+                {
+                    config.Cookie.Name = "IdentityCookie";
+                    config.LoginPath = "/User/Login";
                 });
 
 
@@ -121,7 +127,9 @@ namespace Cycler
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
-                endpoints.MapHub<LocationHub>("/locationHub");
+                endpoints.MapHub<LocationHub>("/locationHub", (opts) =>
+                {
+                });
             });
             
         }

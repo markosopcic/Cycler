@@ -37,8 +37,8 @@
 
 @if (!Model.Finished && DateTime.UtcNow.AddMinutes(-5) < Model.StartTime)
 {
-    <input id="user-search" style="width:15%;height:4%;position:fixed;left:0px;float:left;z-index:99 !important" class="form-control" placeholder="Search users..." />
-    <div id="active-users" style="height:100%;width:15%;padding-top:2%;position:fixed;left:0px;float:left;overflow-y:scroll;-ms-overflow-style:none;border-style: solid">
+    <input id="user-search" style="width:15%;height:4%;position:absolute;left:0px;float:left;z-index:99 !important" class="form-control" placeholder="Search users..." />
+    <div id="active-users" style="height:50%;width:15%;padding-top:2%;position:absolute;left:0px;float:left;overflow-y:scroll;-ms-overflow-style:none;border-style: solid">
         <style>
                 ::-webkit-scrollbar {
                     width: 0px;

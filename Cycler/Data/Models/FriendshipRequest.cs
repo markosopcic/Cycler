@@ -10,10 +10,8 @@ namespace Cycler.Data.Models
         public ObjectId Id { get; set; }
         public ObjectId Sender { get; set; }
         public ObjectId Receiver { get; set; }
-        [BsonDateTimeOptions]
         public DateTime TimeSent { get; set; }
         
-        [BsonDateTimeOptions]
         public DateTime? TimeAccepted { get; set; }
         
         public bool Accepted { get; set; }

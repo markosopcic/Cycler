@@ -20,9 +20,7 @@ namespace Cycler.Data.Models
         
         public List<ObjectId> AcceptedUsers { get; set; } = new List<ObjectId>();
 
-        [BsonDateTimeOptions]
         public DateTime StartTime { get; set; }
-        [BsonDateTimeOptions]
         public DateTime? EndTime { get; set; }
         
         public bool Finished { get; set; }
