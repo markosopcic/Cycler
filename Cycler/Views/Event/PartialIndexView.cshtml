@@ -7,9 +7,22 @@
             <div>
                 @ev.Name
             </div>
-            <div>
-                Description: @ev.Description
-            </div>
+
+                @if (!ev.Private)
+                {
+                    <div>
+                    Description: @ev.Description
+                    </div>
+                }
+                else
+                {
+                    <div>
+                        Distance: @ev.UserEventData.First().Meters m
+                        </div><div>
+                        Duration: @ev.UserEventData.First().Duration.ToString("g")
+                    </div>
+                }
+            
             <div>
                 Start Time: @ev.StartTime.ToLocalTime()
             </div>
@@ -19,12 +32,16 @@
                     Finished Time: @ev.EndTime
                 </div>
             }
-            <div>
-                Invited: @ev.Invited
-            </div>
-            <div>
-                Accepted: @ev.Accepted
-            </div>
+            @if (!ev.Private)
+            {
+                <div>
+                    Invited: @ev.Invited
+                </div>
+                <div>
+                    Accepted: @ev.Accepted
+                </div>
+            }
+
         </div>
         <div class="column">
             <a style="float:right" class="btn btn-primary" href="/Event/Details/@ev.Id">Details</a>

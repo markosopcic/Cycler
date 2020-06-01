@@ -103,7 +103,8 @@ namespace Cycler.Controllers
                 EndTime = e.EndTime?.ToUserTime(User),
                 Accepted = invitationRepository.CountAccepted(e.Id),
                 Invited = invitationRepository.CountInvited(e.Id),
-                OwnerId = e.OwnerId.ToString()
+                OwnerId = e.OwnerId.ToString(),
+                UserEventData = e.UserEventData
             });
             return PartialView("../Event/PartialIndexView",result);
         }

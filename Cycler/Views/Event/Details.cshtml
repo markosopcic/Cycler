@@ -33,6 +33,11 @@
     <label class="text-body">People accepted: @Model.Accepted</label>
     <p></p>
 }
+else
+{
+    <div>Duration: @Model.UserEventData.First().Duration.ToString("g")</div>
+    <div>Distance: @Model.UserEventData.First().Meters.ToString("g")</div>
+}
 <div class="text-body"><h3>Description</h3><p></p>@Model.Description</div><br/><p></p>
 
 @if (!Model.Finished && DateTime.UtcNow.AddMinutes(-5) < Model.StartTime)
@@ -46,6 +51,26 @@
                 }
             </style>
 
+@if (!Model.Private)
+{
+    <table class="table-dark table-hover">
+        <thead>
+        <tr>
+            <td>User</td>
+            <td>Distance</td>
+            <td>Duration</td>
+        </tr>
+        </thead>
+        @foreach (var userData in Model.UserEventData)
+        {
+            <tr>
+                <td>@Model.UserIds.First(e => e.UserId == userData.UserId.ToString()).Name</td>
+                <td>@userData.Meters m</td>
+                <td>@userData.Duration.ToString("g")</td>
+            </tr>
+        }
+    </table>
+}
 
 
     </div>
