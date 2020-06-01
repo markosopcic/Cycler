@@ -180,7 +180,7 @@ namespace Cycler.Data.Repositories
         public void CheckAndFinishEvent(ObjectId userId, ObjectId eventId)
         {
             context.Event.UpdateOne(e => e.Id == eventId && e.OwnerId == userId,
-                Builders<Event>.Update.Set(e => e.Finished, true));
+                Builders<Event>.Update.Set(e => e.Finished, true).Set(e => e.EndTime, DateTime.SpecifyKind(DateTime.UtcNow,DateTimeKind.Utc)));
         }
     }
 }

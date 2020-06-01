@@ -12,7 +12,11 @@
 @{
     ViewData["Title"] = @Model.Name;
 }
-
+@if (!Model.Finished && Model.OwnerId == User.Identity.GetUserId().ToString())
+{
+    <a class="btn btn-primary" onclick="return confirm('Are you sure you want to finish the event?');" style="float:right" asp-controller="Event" asp-action="FinishEvent" asp-route-eventId="@Model.Id">Finish event</a>
+    
+}
 <h3> @Model.Name</h3> @if (Model.OwnerId == User.Identity.GetUserId().ToString())
                       {
                           <a class="btn btn-danger" onclick="return confirm('Are you sure you want to delete?');" style="float:right" asp-controller="Event" asp-action="Delete" asp-route-eventId="@Model.Id">Delete Event</a>
@@ -20,10 +24,10 @@
 
 <input id="event-id-input" type="hidden" value="@Model.Id"/>
 
-<label class="text-body">Started: @Model.StartTime</label><p></p>
+<label class="text-body">Start Time: @Model.StartTime</label><p></p>
 @if (Model.Finished)
 {
-    <label class="text-body">Finished: @Model.EndTime </label><p></p>
+    <label class="text-body">Finish Time: @Model.EndTime </label><p></p>
 }
 
 @if (!Model.Private)
@@ -36,24 +40,13 @@
 else
 {
     <div>Duration: @Model.UserEventData.First().Duration.ToString("g")</div>
-    <div>Distance: @Model.UserEventData.First().Meters.ToString("g")</div>
+    <div>Distance: @Model.UserEventData.First().Meters.ToString("g") m</div>
 }
 <div class="text-body"><h3>Description</h3><p></p>@Model.Description</div><br/><p></p>
 
-@if (!Model.Finished && DateTime.UtcNow.AddMinutes(-5) < Model.StartTime)
+@if (!Model.Private && Model.Finished && Model.UserEventData != null && Model.UserEventData.Any())
 {
-    <input id="user-search" style="width:15%;height:4%;position:absolute;left:0px;float:left;z-index:99 !important" class="form-control" placeholder="Search users..." />
-    <div id="active-users" style="height:50%;width:15%;padding-top:2%;position:absolute;left:0px;float:left;overflow-y:scroll;-ms-overflow-style:none;border-style: solid">
-        <style>
-                ::-webkit-scrollbar {
-                    width: 0px;
-                    background: transparent;
-                }
-            </style>
-
-@if (!Model.Private)
-{
-    <table class="table-dark table-hover">
+    <table class="table-dark table-hover" style="width:100%">
         <thead>
         <tr>
             <td>User</td>
@@ -71,6 +64,19 @@ else
         }
     </table>
 }
+
+@if (!Model.Finished && DateTime.UtcNow > Model.StartTime.AddMinutes(-15))
+{
+    <input id="user-search" style="width:15%;height:4%;position:absolute;left:0px;float:left;z-index:99 !important" class="form-control" placeholder="Search users..." />
+    <div id="active-users" style="height:50%;width:15%;padding-top:2%;position:absolute;left:0px;float:left;overflow-y:scroll;-ms-overflow-style:none;border-style: solid">
+        <style>
+                ::-webkit-scrollbar {
+                    width: 0px;
+                    background: transparent;
+                }
+            </style>
+
+
 
 
     </div>

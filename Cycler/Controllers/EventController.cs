@@ -48,6 +48,19 @@ namespace Cycler.Controllers
             return RedirectToAction("Index");
         }
 
+        [Route("Event/Details/{eventId}/FinishEvent")]
+        public IActionResult FinishEvent([FromRoute] string eventId)
+        {
+            ObjectId eId;
+            if (ObjectId.TryParse(eventId, out eId))
+            {
+                eventRepository.CheckAndFinishEvent(User.Identity.GetUserId(), eId);
+                return RedirectToAction("Details", new {eventId});
+            }
+
+            return BadRequest("Invalid event id!");
+        }
+
         [Route("Event/Details/{eventId}")]
         public IActionResult Details([FromRoute] string eventId)
         {

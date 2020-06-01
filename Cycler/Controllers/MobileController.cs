@@ -325,7 +325,6 @@ namespace Cycler.Controllers
             }
 
             eventRepository.AddLocationsForEvent(eventId,userLocations);
-            eventRepository.CheckAndFinishEvent(User.Identity.GetUserId(), eventId);
             return Ok();
 
         }
@@ -446,5 +445,17 @@ namespace Cycler.Controllers
             return Ok();
         }
 
+        [HttpGet]
+        [Route("/mobile/finish-event")]
+        public IActionResult FinishEvent([FromQuery] string eventId)
+        {
+            ObjectId eId;
+            if (!ObjectId.TryParse(eventId, out eId))
+            {
+                return BadRequest();
+            }
+            eventRepository.CheckAndFinishEvent(User.Identity.GetUserId(),eId);
+            return Ok();
+        }
     }
 }
