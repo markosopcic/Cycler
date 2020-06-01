@@ -46,7 +46,7 @@ else
 
 @if (!Model.Private && Model.Finished && Model.UserEventData != null && Model.UserEventData.Any())
 {
-    <table class="table-dark table-hover" style="width:100%">
+    <table class="table-dark table-hover table-primary table-responsive" style="width:100%">
         <thead>
         <tr>
             <td>User</td>
@@ -65,7 +65,7 @@ else
     </table>
 }
 
-@if (!Model.Finished && DateTime.UtcNow > Model.StartTime.AddMinutes(-15))
+@if (!Model.Finished && DateTime.UtcNow > Model.StartTime.UtcFromUser(User).AddMinutes(-15))
 {
     <input id="user-search" style="width:15%;height:4%;position:absolute;left:0px;float:left;z-index:99 !important" class="form-control" placeholder="Search users..." />
     <div id="active-users" style="height:50%;width:15%;padding-top:2%;position:absolute;left:0px;float:left;overflow-y:scroll;-ms-overflow-style:none;border-style: solid">
