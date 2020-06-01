@@ -172,6 +172,7 @@ namespace Cycler.Data.Repositories
 
         public void DeleteEvent(ObjectId userId, ObjectId eventId)
         {
+            context.Invitation.DeleteMany(e => e.EventId == eventId);
             context.Event.DeleteOne(e => e.OwnerId == userId && e.Id == eventId);
         }
 
