@@ -89,18 +89,8 @@ $(document).ready(function(){
             promise = Cesium.sampleTerrainMostDetailed(viewer.terrainProvider, [Cesium.Cartographic.fromDegrees(latitude, longitude)]);
             Cesium.when(promise, function (position) {
                 var model = users[id];
-                var heading = Cesium.Math.toRadians(bearing(model.position.latitude, model.position.longitude, latitude,longitude));
-                console.log(heading);
-                var pitch = 0;
-                var roll = 0;
-                var hpr = new Cesium.HeadingPitchRoll(heading, pitch, roll);
-                var orientation = Cesium.Transforms.headingPitchRollQuaternion(
-                    position,
-                    hpr
-                );
                 position = position[0];
                 model.position = Cesium.Cartesian3.fromDegrees(latitude, longitude, position.height);
-                model.orientation = orientation
             });
         }
 
