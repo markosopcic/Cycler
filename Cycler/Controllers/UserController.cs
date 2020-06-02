@@ -203,6 +203,7 @@ using static Cycler.Helpers.Utility;
             var user = userRepository.GetById(parsed.Value);
             var model = new UserViewModel
             {
+                Id = user.Id.ToString(),
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Email = user.Email,

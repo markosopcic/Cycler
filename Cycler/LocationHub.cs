@@ -15,9 +15,8 @@ namespace Cycler
         {
             return base.OnConnectedAsync();
         }
-
-        [HubMethodName("BroadcastPosition")]
-        public  Task BroadcastPosition(string id,string name,string longitude, string latitude)
+        
+        public  Task Position(string id,string name,string longitude, string latitude)
         {
             var myName  = Context.User.Identity.GetSpecificClaim("FirstName") +
                        Context.User.Identity.GetSpecificClaim("LastName");
