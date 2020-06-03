@@ -229,6 +229,7 @@ namespace Cycler.Controllers
             var user = userRepository.GetById(parsed.Value);
             var model = new UserViewModel
             {
+                NumOfFriends = user.Friends.Count,
                 Email = user.Email,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
