@@ -49,17 +49,17 @@ else
     <table class="table-dark table-hover table-primary table-responsive" style="width:100%">
         <thead>
         <tr>
-            <td class="m-lg-n2">User</td>
-            <td class="m-lg-n2">Distance</td>
-            <td class="m-lg-n2">Duration</td>
+            <td style="width:33%">User</td>
+            <td style="width:33%">Distance</td>
+            <td style="width:33%">Duration</td>
         </tr>
         </thead>
         @foreach (var userData in Model.UserEventData)
         {
             <tr>
-                <td class="m-lg-n2">@Model.UserIds.First(e => e.UserId == userData.UserId.ToString()).Name</td>
-                <td class="m-lg-n2">@userData.Meters m</td>
-                <td class="m-lg-n2">@userData.Duration.ToString("g")</td>
+                <td style="width:33%">@Model.UserIds.First(e => e.UserId == userData.UserId.ToString()).Name</td>
+                <td style="width:33%">@userData.Meters m</td>
+                <td style="width:33%">@userData.Duration.ToString("g")</td>
             </tr>
         }
     </table>
