@@ -301,7 +301,7 @@ namespace Cycler.Controllers
                 Locations = eventModel.Locations.Select(e => new Location
                 {
                     Latitude = e.Latitude, Longitude = e.Longitude,
-                    Time = timeStart.AddMilliseconds(e.TimeMillis)
+                    Time = DateTime.SpecifyKind(timeStart.AddMilliseconds(e.TimeMillis),DateTimeKind.Utc)
                 }).ToList()
             };
             if (eventModel.EventId == null || !ObjectId.TryParse(eventModel.EventId, out eventId))
