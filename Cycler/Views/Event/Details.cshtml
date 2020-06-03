@@ -46,20 +46,20 @@ else
 
 @if (!Model.Private && Model.Finished && Model.UserEventData != null && Model.UserEventData.Any())
 {
-    <table class="table-dark table-hover table-primary table-responsive" style="width:100%">
+    <table class="table-dark">
         <thead>
         <tr>
-            <td style="width:33%">User</td>
-            <td style="width:33%">Distance</td>
-            <td style="width:33%">Duration</td>
+            <td >User</td>
+            <td >Distance</td>
+            <td>Duration</td>
         </tr>
         </thead>
         @foreach (var userData in Model.UserEventData)
         {
             <tr>
-                <td style="width:33%">@Model.UserIds.First(e => e.UserId == userData.UserId.ToString()).Name</td>
-                <td style="width:33%">@userData.Meters m</td>
-                <td style="width:33%">@userData.Duration.ToString("g")</td>
+                <td >@Model.UserIds.First(e => e.UserId == userData.UserId.ToString()).Name</td>
+                <td >@userData.Meters m</td>
+                <td >@userData.Duration.ToString("g")</td>
             </tr>
         }
     </table>
