@@ -44,6 +44,8 @@ namespace Cycler.Data.Repositories
                     .Include(e => e.OwnerId)
                     .Include(e => e.AcceptedUsers)
                     .Include(e => e.StartTime)
+                    .Include(e => e.Finished)
+                    .Include(e => e.EndTime)
                     .Include(e => e.EndTime)
                     .Include(e => e.Id)
                     .Include(e => e.Private)

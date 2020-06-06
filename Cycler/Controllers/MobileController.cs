@@ -386,6 +386,7 @@ namespace Cycler.Controllers
                         Name = e.Name,
                         Description = e.Description,
                         Private = e.Private,
+                        Finished = e.Finished,
                         StartTime = e.StartTime.ToUserTime(User).ToString("f"),
                         EndTime = e.EndTime?.ToUserTime(User).ToString("f"),
                         Accepted = invitationRepository.CountAccepted(e.Id),
