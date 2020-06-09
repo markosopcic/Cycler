@@ -346,8 +346,8 @@ namespace Cycler.Controllers
                 return new
                 {
                     e.Name, StartTime = e.StartTime.ToUserTime(User).ToString("f"), EndTime = e.EndTime?.ToUserTime(User).ToString("f"),
-                    Duration = data.Duration.TotalSeconds,
-                    data.Meters,
+                    Duration = data?.Duration.TotalSeconds,
+                    data?.Meters,
                     User = users.First(u => u.Id == e.OwnerId).FirstName +" "+ users.First(u => u.Id == e.OwnerId).LastName
                 };
             });
