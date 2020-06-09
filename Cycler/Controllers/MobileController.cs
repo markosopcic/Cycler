@@ -342,7 +342,7 @@ namespace Cycler.Controllers
                 .ToList());
             var data = eventFeed.Select(e =>
             {
-                var data = e.UserEventData.First(ev => ev.UserId == e.OwnerId);
+                var data = e.UserEventData.FirstOrDefault(ev => ev.UserId == e.OwnerId);
                 return new
                 {
                     e.Name, StartTime = e.StartTime.ToUserTime(User).ToString("f"), EndTime = e.EndTime?.ToUserTime(User).ToString("f"),
