@@ -103,20 +103,21 @@ using static Cycler.Helpers.Utility;
         }
 
         [AllowAnonymous]
-        [HttpPost("register")]
+        [HttpPost]
         public IActionResult Register([FromForm]RegisterModel model)
         {
-            if (model == null || model.Email == null || model.Password == null || model.ConfirmPassword == null ||
-                model.FirstName == null || model.LastName == null || model.Password != model.ConfirmPassword)
+            if (!ModelState.IsValid)
             {
-                ViewBag.HasMessage = true;
-                ViewBag.Message = "Invalid registration attempt. Please check that no field is empty and that your passwords match.";
                 return View("Login");
             }
-            // map model to entity
+            if (model.Password != model.ConfirmPassword)
+            {
+                ViewBag.HasMessage = true;
+                ViewBag.Message = "Invalid registration attempt. Please check that your passwords match.";
+                return View("Login");
+            }
             try
             {
-                // create user
                 var user = userRepository.Register(model);
                 if (user == null)
                 {
@@ -130,17 +131,14 @@ using static Cycler.Helpers.Utility;
                     new Claim(ClaimTypes.Name,  user.FirstName),
                     new Claim(ClaimTypes.Email,user.Email),
                     new Claim(ClaimTypes.Surname,user.LastName), 
-                };  
-  
-                var grandmaIdentity = new ClaimsIdentity(userClaims, "User Identity");  
-  
-                var userPrincipal = new ClaimsPrincipal(new[] { grandmaIdentity });  
+                };
+                var identity = new ClaimsIdentity(userClaims, "User Identity");
+                var userPrincipal = new ClaimsPrincipal(new[] { identity });  
                 HttpContext.SignInAsync(userPrincipal).Wait();
                 return RedirectToAction("Index", "Home");
             }
             catch (Exception ex)
             {
-                // return error message if there was an exception
                 return BadRequest(new { message = ex.Message });
             }
         }
