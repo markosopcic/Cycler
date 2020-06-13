@@ -8,14 +8,9 @@ using Microsoft.AspNetCore.SignalR;
 namespace Cycler
 {
     
+    [Authorize]
     public class LocationHub : Hub
     {
-
-        public override Task OnConnectedAsync()
-        {
-            return base.OnConnectedAsync();
-        }
-        
         public  Task Position(string id,string name,string longitude, string latitude)
         {
             var myName  = Context.User.Identity.GetSpecificClaim("FirstName") +

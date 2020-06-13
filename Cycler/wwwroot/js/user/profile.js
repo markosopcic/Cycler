@@ -15,7 +15,6 @@ $(document).ready(function(){
     });
 
     connection = new signalR.HubConnectionBuilder().withUrl("/locationHub").build();
-
     connection.on("Position", function (name,id, latitude, longitude) {
         if (users[id] === undefined || users[id] === null) {
             try {

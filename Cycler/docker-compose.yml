@@ -1,5 +1,4 @@
 version: "3.7"
-
 services:
 
   reverseproxy:
@@ -22,3 +21,4 @@ services:
     expose:
       - "5000"
     restart: always
+    
