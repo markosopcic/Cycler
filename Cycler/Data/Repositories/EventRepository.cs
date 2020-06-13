@@ -86,7 +86,7 @@ namespace Cycler.Data.Repositories
         {
             return context.Event
                 .Find(e => (e.OwnerId == userId || e.AcceptedUsers.Any(e => e == userId)) && !e.Finished &&
-                           e.StartTime >= DateTime.UtcNow.AddMinutes(-15) && e.StartTime <=DateTime.UtcNow.AddHours(8))
+                    (e.StartTime > DateTime.UtcNow.AddHours(-12)  || e.StartTime > DateTime.UtcNow.AddMinutes(15)))
                 .Project<Event>(Builders<Event>.Projection
                     .Include(e => e.Name)
                     .Include(e => e.Description)
