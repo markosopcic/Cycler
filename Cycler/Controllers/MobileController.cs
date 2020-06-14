@@ -121,12 +121,17 @@ namespace Cycler.Controllers
         {
             var userId = User.Identity.GetUserId();
             var requests = friendshipRepository.GetUserRequests(userId);
-            return Json(requests.Select(e => new FriendRequestViewModel
+            return Json(requests.Select(e =>
             {
-                Id = e.Id.ToString(),
-                Sender = e.Sender.ToString(),
-                SenderName = userRepository.GetById(e.Sender).FullName,
-                TimeSent = e.TimeSent.ToUserTime(User).ToString("f"),
+                var user = userRepository.GetById(e.Sender);
+                
+                return new FriendRequestViewModel
+                {
+                    Id = e.Id.ToString(),
+                    Sender = e.Sender.ToString(),
+                    SenderName = user.FirstName+ " "+ user.LastName,
+                    TimeSent = e.TimeSent.ToUserTime(User).ToString("f"),
+                };
             }));
         }
         [Route("mobile/accept-friend-request")]

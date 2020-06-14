@@ -71,6 +71,12 @@ using static Cycler.Helpers.Utility;
         [HttpPost]
         public IActionResult Authenticate([FromForm]AuthenticateModel model)
         {
+            if (model == null || model.Password == null || model.Email == null)
+            {
+                ViewBag.HasMessage = true;
+                ViewBag.Message = "Invalid credentials. Please try again.";
+                return View("Login");
+            }
             var user = userRepository.Login(model.Email, model.Password);
             if (user == null)
             {
