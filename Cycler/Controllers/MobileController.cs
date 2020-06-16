@@ -412,7 +412,7 @@ namespace Cycler.Controllers
                             }
                         ).ToList()
                     };
-                }).OrderByDescending(x => x.StartTime);
+                }).ToList();
                 return Ok(result);
             
         }
