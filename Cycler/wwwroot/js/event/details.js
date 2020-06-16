@@ -45,7 +45,7 @@ $(document).ready(function(){
     connection.on("Position", function (name,id, latitude, longitude) {
         if (users[id] === undefined || users[id] === null && (userTracked[id] === true || userTracked[id] === undefined || userTracked[id] === null)) {
             try {
-                addToSearchBar(name,id)
+                addToSearchBar(name,id);
                 var entity = viewer.entities.add({
                     position: Cesium.Cartesian3.fromDegrees(latitude, longitude),
                     model: {

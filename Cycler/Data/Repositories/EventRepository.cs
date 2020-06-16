@@ -155,7 +155,7 @@ namespace Cycler.Data.Repositories
             var user = context.User.Find(e => e.Id == userId).FirstOrDefault();
             if (user == null) return null;
             return context.Event
-                .Find(Builders<Event>.Filter.Eq(e => e.Finished,true) & (Builders<Event>.Filter.In(e => e.OwnerId,user.Friends) | Builders<Event>.Filter.AnyIn(e => e.AcceptedUsers, user.Friends)))
+                .Find(Builders<Event>.Filter.Eq(e => e.Finished,true) & (Builders<Event>.Filter.Eq(e => e.OwnerId,userId) | Builders<Event>.Filter.In(e => e.OwnerId,user.Friends) | Builders<Event>.Filter.AnyIn(e => e.AcceptedUsers, user.Friends)))
                 .SortByDescending(e => e.StartTime)
                 .Skip(skip)
                 .Limit(take).Project<Event>(Builders<Event>.Projection

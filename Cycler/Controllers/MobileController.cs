@@ -186,8 +186,12 @@ namespace Cycler.Controllers
         public IActionResult SendLocation([FromBody] LocationModel position)
         {
             var idToBroadcastTo = position.Id ?? User.Identity.GetUserId().ToString();
+            var userName = User.Identity.GetSpecificClaim(ClaimTypes.Name) + " " +
+                           User.Identity.GetSpecificClaim(ClaimTypes.Surname);
+            var userId = User.Identity.GetUserId().ToString();
+            
             locationHub.Clients.Group(idToBroadcastTo).SendCoreAsync("Position",
-                new object[] {User.Identity.GetSpecificClaim(ClaimTypes.Name) + " "+ User.Identity.GetSpecificClaim(ClaimTypes.Surname),User.Identity.GetUserId().ToString(),position.Longitude, position.Latitude});
+                new object[] {userName,userId,position.Longitude, position.Latitude});
             
             if (position.Id == null && position.UpdateOnlineStatus)
             {
