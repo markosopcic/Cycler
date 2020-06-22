@@ -31,10 +31,17 @@ $(document).ready(function(){
                 var promise = Cesium.sampleTerrainMostDetailed(viewer.terrainProvider, [Cesium.Cartographic.fromDegrees(latitude, longitude)]);
                 Cesium.when(promise, function (position) {
                     position = position[0];
-                    entity.position = Cesium.Cartesian3.fromDegrees(latitude, longitude, position.height);
-                    let origin = Cesium.Cartographic.fromCartesian(model.position._value)
-                    let b = bearing(origin.latitude,origin.longitude,position.latitude,position.longitude);
-                    model.orientation = Cesium.HeadingPitchRoll(b,0,0);
+                    let positions = new Cesium.SampledPositionProperty();
+                    positions.setInterpolationOptions({
+                        interpolationDegrees:5,
+                        interpolationAlgorithm : Cesium.LagrangePolynomialApproximation
+                    });
+                    let time = Cesium.JulianDate.now();
+                    time.secondsOfDay+=5;
+                    positions.addSample(time,Cesium.Cartographic.toCartesian(position));
+                    entity.position = positions;
+                    entity.orientation = new Cesium.VelocityOrientationProperty(entity.position);
+
 
                 });
                 var lab = {
@@ -65,11 +72,10 @@ $(document).ready(function(){
             Cesium.when(promise, function (position) {
                 var model = users[id];
                 position = position[0];
+                let time =  Cesium.JulianDate.now();
+                time.secondsOfDay+=5;
+                model.position.addSample(time,Cesium.Cartographic.toCartesian(position));
                 
-                //let origin = Cesium.Cartographic.fromCartesian(model.position._value)
-                //let b = bearing(origin.latitude,origin.longitude,position.latitude,position.longitude);
-                model.position = Cesium.Cartesian3.fromDegrees(latitude, longitude, position.height);
-                //model.orientation = new Cesium.HeadingPitchRoll(b,b,b);
             });
         }
 
