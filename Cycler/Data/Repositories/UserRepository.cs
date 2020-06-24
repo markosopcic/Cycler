@@ -151,6 +151,24 @@ namespace Cycler.Data.Repositories
                 .ToList();
         }
 
+        public List<User> SearchFriendsNotInvited(ObjectId user, string term, ObjectId eventId)
+        {
+            
+            if(user == null) throw new ArgumentNullException(nameof(user));
+            if(term == null) throw new ArgumentNullException(nameof(term));
+            if(eventId == null) throw new ArgumentNullException(nameof(eventId));
+            var ev = context.Event.Find(e => e.Id == eventId).FirstOrDefault();
+            var invites = context.Invitation.Find(e => e.EventId == eventId).ToList().Select(e => e.InvitedId);
+            if (ev == null) return null;
+            return context.User.Find(Builders<User>.Filter.Where(e =>!ev.AcceptedUsers.Contains(e.Id) & !invites.Contains(e.Id) &  e.FullName.Contains(term.ToLower())) &  Builders<User>.Filter.AnyEq(e => e.Friends, user))
+                .Project<User>(Builders<User>
+                    .Projection
+                    .Include(e => e.Id)
+                    .Include(e => e.FirstName)
+                    .Include(e => e.LastName))
+                .ToList();
+        }
+
 
         private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {

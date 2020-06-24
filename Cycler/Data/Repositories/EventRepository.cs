@@ -25,8 +25,19 @@ namespace Cycler.Data.Repositories
             return e;
         }
 
+        public void InviteMoreFriends(ObjectId userId, ObjectId eventId, IEnumerable<ObjectId> userIds)
+        {
+            if(userId == null) throw new ArgumentNullException(nameof(userId));
+            if(eventId == null) throw new ArgumentNullException(nameof(eventId));
+            if(userIds == null) throw new ArgumentNullException(nameof(userIds));
+            var ev = context.Event.Find(e => e.OwnerId == userId && e.Id == eventId).FirstOrDefault();
+            if (ev == null) return;
+            var invitations = context.Invitation.Find(e => e.EventId == eventId && userIds.Contains(e.InvitedId))
+                .ToList().Select(e => e.InvitedId);
+            var toInvite = userIds.Except(invitations);
+            context.Invitation.InsertMany(userIds.Select(e => new Invitation{InviterId = userId,EventId = eventId,InvitedId = e,InvitationTime = DateTime.SpecifyKind(DateTime.UtcNow,DateTimeKind.Utc),CanInvite = false}));
+        }
 
-        
 
         public IEnumerable<Event> GetEventsForUser(ObjectId userId,int skip, int take)
         {

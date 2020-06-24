@@ -31,6 +31,8 @@ using Cycler.Data.Models;
 
         List<User> GetFriends(ObjectId user);
 
+        List<User> SearchFriendsNotInvited(ObjectId user, string term, ObjectId eventId);
+
 
 
 

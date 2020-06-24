@@ -115,5 +115,37 @@ namespace Cycler.Controllers
             if(term == null) throw new ArgumentNullException(nameof(term));
             return Json(userRepository.SearchFriends(User.Identity.GetUserId(),term).Where( e => e.Id != User.Identity.GetUserId()).Select(e => new {Id = e.Id.ToString(),FullName = e.FirstName+" "+e.LastName,ResultType = "User"}));
         }
+        
+        [Route("search-friends-not-invited")]
+        public IActionResult SearchFriendsNotInvited(string term,string eventId)
+        {
+            if(term == null) throw new ArgumentNullException(nameof(term));
+            ObjectId eId;
+            if (!ObjectId.TryParse(eventId,out  eId))
+            {
+                return BadRequest("Invalid EventID");
+            }
+            return Json(userRepository.SearchFriendsNotInvited(User.Identity.GetUserId(),term,eId).Where( e => e.Id != User.Identity.GetUserId()).Select(e => new {Id = e.Id.ToString(),FullName = e.FirstName+" "+e.LastName,ResultType = "User"}));
+        }
+
+        [HttpPost]
+        [Route("invite-more-friends")]
+        public IActionResult InviteMoreFriends([FromQuery] string eventId, [FromBody] IEnumerable<string> ids)
+        {
+            ObjectId eId;
+            if (!ObjectId.TryParse(eventId, out eId))
+            {
+                return BadRequest("Invalid event id");
+            }
+
+            if (ids == null || ids.Count() == 0)
+            {
+                return BadRequest("No ids given!");
+            }
+
+            ObjectId tmp;
+            eventRepository.InviteMoreFriends(User.Identity.GetUserId(),eId,ids.Where(e => ObjectId.TryParse(e,out tmp)).Select(e => ObjectId.Parse(e)));
+            return Ok();
+        }
     }
 }

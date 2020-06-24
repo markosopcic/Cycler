@@ -8,8 +8,8 @@ namespace Cycler.Data.Repositories.Interfaces
     public interface IEventRepository
     {
         public Event AddEvent(Event e);
-        
 
+        public void InviteMoreFriends(ObjectId userId, ObjectId eventId, IEnumerable<ObjectId> userIds);
 
         public IEnumerable<Event> GetEventsForUser(ObjectId userId,int skip, int take);
 
